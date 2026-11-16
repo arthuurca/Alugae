@@ -129,7 +129,7 @@
     if (galleryMain) {
       galleryMain.innerHTML = p.imagePath
         ? `<img class="product-real-image" src="${encodeURI(p.imagePath)}" alt="${escapeHTML(p.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r-lg);">`
-        : `<div class="fashion-art ph-${p.colorScheme}" style="width:100%;height:100%;padding:2rem">${renderFashionArt(p)}</div>`;
+        : `<div class="fashion-art ph-${sanitizeCategoryClass(p.colorScheme)}" style="width:100%;height:100%;padding:2rem">${renderFashionArt(p)}</div>`;
     }
 
     const nameEl = document.getElementById("product-name");

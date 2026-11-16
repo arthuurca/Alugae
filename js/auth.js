@@ -181,7 +181,18 @@
         }
 
         const redirect = getParam("redirect");
-        window.location.href = redirect ? decodeURIComponent(redirect) : "catalogo.html";
+        let safeRedirect = "catalogo.html";
+        if (redirect) {
+          try {
+            const target = new URL(redirect, window.location.origin);
+            if (target.origin === window.location.origin && target.protocol === window.location.protocol) {
+              safeRedirect = `${target.pathname}${target.search}${target.hash}`;
+            }
+          } catch (redirectError) {
+            console.warn("Redirecionamento pós-login inválido:", redirectError);
+          }
+        }
+        window.location.href = safeRedirect;
       } catch (err) {
         console.error("Erro no login:", err);
         showError(feedbackEl, "Erro ao conectar com o servidor.");

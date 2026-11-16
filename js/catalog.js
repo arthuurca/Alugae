@@ -289,7 +289,7 @@
         const isFav = state.wishlist.includes(p.id);
         const imageHTML = p.imagePath
           ? `<img src="${encodeURI(p.imagePath)}" alt="${escapeHTML(p.name)}" class="product-card-img" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`
-          : `<div class="fashion-art ph-${p.colorScheme}" style="width:100%;height:100%;padding:1.5rem;">${renderFashionArt(p)}</div>`;
+          : `<div class="fashion-art ph-${sanitizeCategoryClass(p.colorScheme)}" style="width:100%;height:100%;padding:1.5rem;">${renderFashionArt(p)}</div>`;
 
         return `
         <article class="product-card" data-id="${p.id}">

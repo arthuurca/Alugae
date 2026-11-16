@@ -142,9 +142,21 @@ const FASHION_ART = {
 };
 
 function renderFashionArt(product, size = "100%") {
-  const artFn = FASHION_ART[product.art_type || product.artType];
-  if (!artFn) return FASHION_ART["dress-midi"](product.art_color || product.artColor || "#888");
-  return artFn(product.art_color || product.artColor || "#888");
+  const artType = product.art_type || product.artType;
+  const artFn = Object.prototype.hasOwnProperty.call(FASHION_ART, artType)
+    ? FASHION_ART[artType]
+    : FASHION_ART["dress-midi"];
+  return artFn(sanitizeArtColor(product.art_color || product.artColor));
+}
+
+function sanitizeArtColor(value) {
+  const color = String(value || "").trim();
+  return /^#[0-9a-f]{3,8}$/i.test(color) ? color : "#888";
+}
+
+function sanitizeCategoryClass(value) {
+  const category = String(value || "").toLowerCase();
+  return /^[a-z0-9-]+$/.test(category) ? category : "casual";
 }
 
 function renderStars(rating, size = 12) {

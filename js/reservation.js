@@ -118,7 +118,7 @@
     if (imgEl) {
       imgEl.innerHTML = product.imagePath
         ? `<img src="${encodeURI(product.imagePath)}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--r-md);" alt="${escapeHTML(product.name)}">`
-        : `<div class="fashion-art ph-${product.colorScheme}" style="width:100%;height:100%;padding:0.5rem">${renderFashionArt(product)}</div>`;
+        : `<div class="fashion-art ph-${sanitizeCategoryClass(product.colorScheme)}" style="width:100%;height:100%;padding:0.5rem">${renderFashionArt(product)}</div>`;
     }
 
     const nameEl = document.getElementById("summary-product-name");

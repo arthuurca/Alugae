@@ -8,6 +8,24 @@
 
   const getClient = () => window.alugaeSupabase;
 
+  async function attachPublicProfiles(client, products) {
+    const ownerIds = [...new Set((products || []).map((product) => product.owner_id).filter(Boolean))];
+    if (ownerIds.length === 0) return products || [];
+
+    const { data: profiles, error } = await client
+      .from("public_profiles")
+      .select("id, nome, nome_loja, cidade, descricao_loja")
+      .in("id", ownerIds);
+
+    if (error) throw error;
+
+    const profileById = new Map((profiles || []).map((profile) => [profile.id, profile]));
+    return (products || []).map((product) => ({
+      ...product,
+      profiles: profileById.get(product.owner_id) || null,
+    }));
+  }
+
   window.AlugaeAPI = {
     // ── AUTHENTICATION ────────────────────────────────────────
 
@@ -135,16 +153,16 @@
 
       const { data, error } = await client
         .from("products")
-        .select(`
-          *,
-          profiles:owner_id (
-            id, nome, nome_loja, cidade, descricao_loja
-          )
-        `)
+        .select("*")
         .eq("ativo", true)
         .order("id", { ascending: true });
 
-      return { data, error };
+      if (error) return { data: null, error };
+      try {
+        return { data: await attachPublicProfiles(client, data), error: null };
+      } catch (profileError) {
+        return { data: null, error: profileError };
+      }
     },
 
     /**
@@ -156,16 +174,17 @@
 
       const { data, error } = await client
         .from("products")
-        .select(`
-          *,
-          profiles:owner_id (
-            id, nome, nome_loja, cidade, descricao_loja
-          )
-        `)
+        .select("*")
         .eq("id", id)
         .single();
 
-      return { data, error };
+      if (error) return { data: null, error };
+      try {
+        const [product] = await attachPublicProfiles(client, [data]);
+        return { data: product, error: null };
+      } catch (profileError) {
+        return { data: null, error: profileError };
+      }
     },
 
     /**
