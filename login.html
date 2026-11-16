@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrar — ALUGAÊ</title>
+  <meta name="description" content="Acesse sua conta na ALUGAÊ para gerenciar suas reservas ou anúncios." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <style>
+    .auth-container {
+      max-width: 460px;
+      margin: 3rem auto 6rem;
+      padding: 0 1rem;
+    }
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: clamp(1.5rem, 5vw, 2.5rem);
+      box-shadow: var(--shadow-sm);
+    }
+    .auth-feedback {
+      margin-bottom: 1.25rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--r-md);
+      font-size: 0.875rem;
+      display: none;
+    }
+    .auth-feedback.is-error {
+      display: block;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--error);
+      color: var(--error);
+    }
+    .password-wrapper {
+      position: relative;
+    }
+    .toggle-password-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-3);
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav injected by main.js -->
+
+  <main class="page-wrapper">
+    <div class="auth-container">
+      <div class="auth-card page-enter">
+        <header style="text-align:center;margin-bottom:2rem;">
+          <p class="section-eyebrow">Bem-vindo(a) de volta</p>
+          <h1 style="font-size:1.85rem;margin:0.25rem 0 0.5rem;letter-spacing:-0.02em;">Acesse sua conta</h1>
+          <p style="color:var(--text-3);font-size:0.95rem;">Digite seus dados para continuar</p>
+        </header>
+
+        <div id="auth-feedback" class="auth-feedback" role="alert"></div>
+
+        <form id="form-login" novalidate>
+          <div class="form-group" style="margin-bottom:1.25rem;">
+            <label class="form-label" for="email">E-mail</label>
+            <input class="form-input" type="email" id="email" required placeholder="seu@email.com" autocomplete="email" />
+          </div>
+
+          <div class="form-group" style="margin-bottom:1.5rem;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <label class="form-label" for="senha">Senha</label>
+              <a href="redefinir-senha.html" style="font-size:0.8rem;color:var(--orange);text-decoration:none;">Esqueceu a senha?</a>
+            </div>
+            <div class="password-wrapper">
+              <input class="form-input" type="password" id="senha" required placeholder="Sua senha" autocomplete="current-password" />
+              <button type="button" id="toggle-senha" class="toggle-password-btn">Mostrar</button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-lg" type="submit" style="width:100%;">
+            Entrar
+          </button>
+        </form>
+
+        <p style="text-align:center;margin-top:1.75rem;font-size:0.875rem;color:var(--text-3);">
+          Ainda não tem conta? <a href="cadastro.html" style="color:var(--orange);font-weight:600;text-decoration:none;">Cadastre-se gratuitamente</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

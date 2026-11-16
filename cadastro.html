@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Criar conta — ALUGAÊ</title>
+  <meta name="description" content="Crie sua conta na ALUGAÊ para alugar peças exclusivas ou disponibilizar seu acervo." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <style>
+    .auth-container {
+      max-width: 580px;
+      margin: 2rem auto 5rem;
+      padding: 0 1rem;
+    }
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: clamp(1.5rem, 5vw, 2.5rem);
+      box-shadow: var(--shadow-sm);
+    }
+    .account-type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.5rem 0 2rem;
+    }
+    .account-type-card {
+      border: 2px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 1.25rem 1rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+      background: var(--surface-2);
+    }
+    .account-type-card:hover {
+      border-color: var(--orange-border);
+    }
+    .account-type-card.active {
+      border-color: var(--orange);
+      background: rgba(232, 104, 50, 0.06);
+    }
+    .account-type-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+    .account-type-desc {
+      font-size: 0.75rem;
+      color: var(--text-3);
+    }
+    .auth-feedback {
+      margin-bottom: 1.25rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--r-md);
+      font-size: 0.875rem;
+      display: none;
+    }
+    .auth-feedback.is-error {
+      display: block;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--error);
+      color: var(--error);
+    }
+    .auth-feedback.is-success {
+      display: block;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav injected by main.js -->
+
+  <main class="page-wrapper">
+    <div class="auth-container">
+      <div class="auth-card page-enter">
+        <header style="text-align:center;margin-bottom:1.5rem;">
+          <p class="section-eyebrow">Junte-se à ALUGAÊ</p>
+          <h1 style="font-size:1.85rem;margin:0.25rem 0 0.5rem;letter-spacing:-0.02em;">Criar nova conta</h1>
+          <p style="color:var(--text-3);font-size:0.95rem;">Escolha como deseja utilizar nossa plataforma</p>
+        </header>
+
+        <div class="account-type-grid" role="radiogroup" aria-label="Tipo de conta">
+          <div class="account-type-card active" data-type="locatario" role="radio" aria-checked="true" tabindex="0">
+            <div class="account-type-title">Quero alugar</div>
+            <div class="account-type-desc">Busco roupas exclusivas para festas e eventos</div>
+          </div>
+          <div class="account-type-card" data-type="anunciante" role="radio" aria-checked="false" tabindex="0">
+            <div class="account-type-title">Quero anunciar</div>
+            <div class="account-type-desc">Tenho loja ou peças e quero disponibilizar para aluguel</div>
+          </div>
+        </div>
+
+        <div id="auth-feedback" class="auth-feedback" role="alert"></div>
+
+        <form id="form-cadastro" class="ad-form-grid" novalidate>
+          <div class="form-group ad-form-full">
+            <label class="form-label" for="nome">Nome completo</label>
+            <input class="form-input" type="text" id="nome" required placeholder="Seu nome completo" />
+          </div>
+
+          <div class="form-group ad-form-full">
+            <label class="form-label" for="email">E-mail</label>
+            <input class="form-input" type="email" id="email" required placeholder="seu@email.com" />
+          </div>
+
+          <div class="form-group ad-form-full">
+            <label class="form-label" for="telefone">Telefone / WhatsApp</label>
+            <input class="form-input" type="tel" id="telefone" placeholder="(11) 99999-9999" />
+          </div>
+
+          <!-- Campos extras caso seja anunciante -->
+          <div id="anunciante-fields" style="display:none;" class="ad-form-full">
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label class="form-label" for="nome-loja">Nome da loja ou ateliê</label>
+              <input class="form-input" type="text" id="nome-loja" placeholder="Ex.: Ateliê Aurora" />
+            </div>
+
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label class="form-label" for="cidade">Cidade / UF</label>
+              <input class="form-input" type="text" id="cidade" placeholder="Ex.: São Paulo - SP" />
+            </div>
+
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label class="form-label" for="descricao-loja">Descrição curta da loja</label>
+              <textarea class="form-input" id="descricao-loja" rows="2" placeholder="Conte brevemente sobre o seu estilo de acervo..."></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="senha">Senha</label>
+            <input class="form-input" type="password" id="senha" required minlength="8" placeholder="Mínimo 8 caracteres" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="senha-confirm">Confirmar senha</label>
+            <input class="form-input" type="password" id="senha-confirm" required minlength="8" placeholder="Repita a senha" />
+          </div>
+
+          <div class="ad-form-full" style="margin-top:1rem;">
+            <button class="btn btn-primary btn-lg" type="submit" style="width:100%;">
+              Criar minha conta
+            </button>
+          </div>
+        </form>
+
+        <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--text-3);">
+          Já possui uma conta? <a href="login.html" style="color:var(--orange);font-weight:600;text-decoration:none;">Fazer login</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

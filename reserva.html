@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Reservar — ALUGAÊ</title>
+  <meta name="description" content="Finalize sua reserva com pagamento seguro via Mercado Pago Checkout Pro." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+
+  <!-- Nav injected by JS -->
+
+  <div class="page-wrapper">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <nav class="catalog-breadcrumb" aria-label="Localização na página" style="padding:1.5rem 0 0">
+        <a href="index.html">Início</a>
+        <span class="catalog-breadcrumb-sep" aria-hidden="true">/</span>
+        <a href="catalogo.html">Catálogo</a>
+        <span class="catalog-breadcrumb-sep" aria-hidden="true">/</span>
+        <span aria-current="page">Finalizar Reserva</span>
+      </nav>
+
+      <div class="reservation-page" style="padding-bottom:5rem;">
+        <div class="reservation-layout">
+
+          <!-- ── Form (left) ─────────────────────────────── -->
+          <div>
+            <div class="reservation-form-card">
+              <div class="reservation-form-header">
+                <h1 class="reservation-form-title">Confirmar dados da reserva</h1>
+                <p class="reservation-form-subtitle">
+                  Revise o período e confirme sua identidade para prosseguir ao pagamento seguro.
+                </p>
+              </div>
+
+              <form class="reservation-form-body" id="reservation-form" novalidate aria-label="Formulário de reserva">
+
+                <!-- Personal info -->
+                <h2 class="form-section-title">Dados do Locatário</h2>
+
+                <div style="display:flex;flex-direction:column;gap:1.25rem;margin-bottom:1.75rem;">
+                  <div class="form-group">
+                    <label class="form-label" for="field-name">Nome completo</label>
+                    <input class="form-input" type="text" id="field-name" required />
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div class="form-group">
+                      <label class="form-label" for="field-email">E-mail de confirmação</label>
+                      <input class="form-input" type="email" id="field-email" required />
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="field-phone">Telefone / WhatsApp</label>
+                      <input class="form-input" type="tel" id="field-phone" required />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Event info -->
+                <h2 class="form-section-title">Período de Locação</h2>
+
+                <div style="display:flex;flex-direction:column;gap:1.25rem;margin-bottom:1.75rem;">
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+                    <div class="form-group">
+                      <label class="form-label" for="field-size">Tamanho</label>
+                      <input class="form-input" type="text" id="field-size" readonly />
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="field-pickup">Data de retirada</label>
+                      <input class="form-input" type="date" id="field-pickup" readonly />
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label" for="field-return">Data de devolução</label>
+                      <input class="form-input" type="date" id="field-return" readonly />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="field-notes">Observações ou instruções de ajuste (opcional)</label>
+                    <textarea class="form-input" id="field-notes" rows="2" placeholder="Algum detalhe especial para o ateliê?"></textarea>
+                  </div>
+                </div>
+
+                <!-- Security and Payment method notice -->
+                <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:1.25rem;margin-bottom:1.75rem;">
+                  <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <strong style="font-size:0.95rem;">Pagamento 100% Protegido via Mercado Pago</strong>
+                  </div>
+                  <p style="font-size:0.85rem;color:var(--text-3);margin:0;">
+                    Ao clicar no botão abaixo, você será redirecionado para o Checkout Pro oficial do Mercado Pago para pagar com <strong>Pix (aprovação imediata), Cartão de Crédito (até 6x) ou Boleto</strong>. Nosso site nunca tem acesso aos dados do seu cartão.
+                  </p>
+                </div>
+
+                <!-- Terms checkbox -->
+                <div class="form-group" style="margin-bottom:2rem;">
+                  <label class="form-checkbox-label" for="field-terms" style="display:flex;align-items:flex-start;gap:0.75rem;cursor:pointer;">
+                    <input type="checkbox" id="field-terms" name="terms" required style="margin-top:3px;" />
+                    <span style="font-size:0.875rem;color:var(--text-2);">
+                      Li e concordo com os termos de devolução, higienização cuidadosa da peça e a política de caução reembolsável da ALUGAÊ.
+                    </span>
+                  </label>
+                </div>
+
+                <button class="btn btn-primary btn-lg" id="submit-btn" type="submit" style="width:100%;">
+                  Ir para o pagamento seguro
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- ── Summary Sidebar (right) ─────────────────── -->
+          <div>
+            <div class="reservation-summary-card" aria-label="Resumo do pedido">
+              <h2 class="reservation-summary-title">Resumo da locação</h2>
+
+              <div class="summary-product-row">
+                <div class="summary-product-thumb" id="summary-product-img" style="width:72px;height:72px;background:var(--surface-2);border-radius:var(--r-sm);overflow:hidden;"></div>
+                <div class="summary-product-info">
+                  <div class="summary-product-name" id="summary-product-name">Peça</div>
+                  <span class="badge badge-orange" id="summary-product-cat" style="font-size:0.7rem;">Categoria</span>
+                </div>
+              </div>
+
+              <div class="summary-rows">
+                <div class="summary-row">
+                  <span class="summary-row-label">Tamanho selecionado</span>
+                  <span class="summary-row-val" id="summary-size">—</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-row-label">Retirada</span>
+                  <span class="summary-row-val" id="summary-pickup">—</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-row-label">Devolução</span>
+                  <span class="summary-row-val" id="summary-return">—</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-row-label">Duração total</span>
+                  <span class="summary-row-val" id="summary-days">—</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-row-label">Valor das diárias</span>
+                  <span class="summary-row-val" id="summary-rental">R$ 0</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-row-label">Caução (reembolsável)</span>
+                  <span class="summary-row-val" id="summary-deposit">R$ 0</span>
+                </div>
+                <div class="summary-row total">
+                  <span class="summary-row-label">Total a pagar</span>
+                  <span class="summary-row-val" id="summary-total">R$ 0</span>
+                </div>
+              </div>
+
+              <div class="summary-guarantee" style="margin-top:1.5rem;font-size:0.8rem;color:var(--text-3);border-top:1px solid var(--border);padding-top:1rem;">
+                ✦ O valor da caução é devolvido integralmente em até 48h após a devolução da peça e vistoria de integridade.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/payment.js"></script>
+  <script src="js/reservation.js"></script>
+
+</body>
+</html>

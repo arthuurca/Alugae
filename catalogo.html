@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Catálogo — ALUGAÊ</title>
+  <meta name="description" content="Explore o catálogo de peças disponíveis para aluguel. Vestidos, ternos, acessórios e muito mais para cada ocasião." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/catalog.css" />
+</head>
+<body>
+
+  <!-- Nav injected by JS -->
+
+  <div class="page-wrapper" id="main-content">
+    <div class="container">
+
+      <!-- ── Page header ─────────────────────────────────── -->
+      <header class="catalog-header">
+        <div class="catalog-header-top">
+          <div>
+            <nav class="catalog-breadcrumb" aria-label="Localização na página">
+              <a href="index.html">Início</a>
+              <span class="catalog-breadcrumb-sep" aria-hidden="true">/</span>
+              <span aria-current="page">Catálogo</span>
+            </nav>
+            <h1 class="catalog-title" id="catalog-heading">Catálogo de peças</h1>
+            <p class="catalog-count text-muted" id="catalog-count" aria-live="polite">
+              Carregando peças...
+            </p>
+          </div>
+
+          <div class="catalog-sort">
+            <span class="catalog-sort-label" id="sort-label">Ordenar por:</span>
+            <select class="sort-select" id="sort-select" aria-labelledby="sort-label">
+              <option value="relevance">Relevância</option>
+              <option value="price-asc">Menor diária</option>
+              <option value="price-desc">Maior diária</option>
+              <option value="rating">Melhor avaliado</option>
+            </select>
+
+            <!-- Mobile filter toggle -->
+            <button class="btn btn-ghost btn-sm" id="filter-toggle"
+              aria-expanded="false"
+              aria-controls="sidebar-filters"
+              style="display:none;">
+              Filtros
+            </button>
+          </div>
+        </div>
+
+        <!-- Active filter tags -->
+        <div id="active-filters" class="active-filters" aria-label="Filtros ativos" role="list"></div>
+      </header>
+
+      <!-- ── Catalog layout ──────────────────────────────── -->
+      <div class="catalog-layout">
+
+        <!-- ── Sidebar filters ─────────────────────────────── -->
+        <aside class="catalog-sidebar" id="sidebar-filters" aria-label="Filtros do catálogo">
+
+          <!-- Category filter -->
+          <div class="filter-group">
+            <h2 class="filter-group-title">Ocasião / Categoria</h2>
+            <div class="filter-group-body">
+              <div class="filter-options-list" role="group" aria-label="Categorias">
+                <button class="cat-filter-btn" data-category="casamento" aria-pressed="false">Casamento</button>
+                <button class="cat-filter-btn" data-category="formatura" aria-pressed="false">Formatura</button>
+                <button class="cat-filter-btn" data-category="festa" aria-pressed="false">Festa</button>
+                <button class="cat-filter-btn" data-category="social" aria-pressed="false">Social / Trabalho</button>
+                <button class="cat-filter-btn" data-category="casual" aria-pressed="false">Casual</button>
+                <button class="cat-filter-btn" data-category="praia" aria-pressed="false">Praia</button>
+                <button class="cat-filter-btn" data-category="fantasia" aria-pressed="false">Fantasia</button>
+                <button class="cat-filter-btn" data-category="acessorios" aria-pressed="false">Acessórios</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Size filter -->
+          <div class="filter-group">
+            <h2 class="filter-group-title">Tamanho</h2>
+            <div class="filter-group-body">
+              <div class="size-btn-grid" role="group" aria-label="Tamanhos">
+                <button class="size-btn" data-size="PP">PP</button>
+                <button class="size-btn" data-size="P">P</button>
+                <button class="size-btn" data-size="M">M</button>
+                <button class="size-btn" data-size="G">G</button>
+                <button class="size-btn" data-size="GG">GG</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price filter -->
+          <div class="filter-group">
+            <h2 class="filter-group-title">Diária máxima</h2>
+            <div class="filter-group-body">
+              <div class="price-slider-wrap">
+                <input
+                  type="range"
+                  class="price-slider"
+                  id="price-slider"
+                  min="50"
+                  max="500"
+                  step="10"
+                  value="500"
+                  aria-label="Preço máximo da diária"
+                />
+                <div class="price-slider-labels">
+                  <span>R$ 50</span>
+                  <span id="price-label">R$ 500</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- ── Products grid ───────────────────────────────── -->
+        <main class="catalog-main" aria-label="Grade de produtos">
+          <div class="products-grid" id="products-grid" role="region" aria-live="polite">
+            <!-- Injected by catalog.js -->
+          </div>
+        </main>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/catalog.js"></script>
+
+</body>
+</html>

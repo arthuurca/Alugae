@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Confirmação da Reserva — ALUGAÊ</title>
+  <meta name="description" content="Acompanhe o status e detalhes do pagamento da sua reserva na ALUGAÊ." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <style>
+    .status-badge-big {
+      display: inline-block;
+      padding: 0.5rem 1.25rem;
+      border-radius: var(--r-full);
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+    .status-badge-paga {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+    .status-badge-aguardando {
+      background: rgba(234, 179, 8, 0.15);
+      color: #eab308;
+      border: 1px solid #eab308;
+    }
+    .status-badge-cancelada {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--error);
+      border: 1px solid var(--error);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav injected by JS -->
+
+  <div class="page-wrapper">
+    <div class="container">
+      <main class="confirmation-page" role="main" aria-labelledby="conf-heading" style="padding-bottom:5rem;">
+        <div class="confirmation-inner page-enter">
+
+          <!-- Dynamic Status Icon -->
+          <div class="confirmation-icon" id="status-icon" role="img" aria-label="Status da reserva">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" fill="none"
+              stroke="var(--orange)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="22" cy="22" r="18"/>
+              <line x1="22" y1="12" x2="22" y2="24"/>
+              <line x1="22" y1="30" x2="22.01" y2="30"/>
+            </svg>
+          </div>
+
+          <h1 class="confirmation-title" id="conf-heading">
+            Carregando reserva...
+          </h1>
+
+          <div id="status-badge-container"></div>
+
+          <p class="confirmation-subtitle" id="conf-subtitle">
+            Consultando os dados no servidor seguro...
+          </p>
+
+          <div class="confirmation-ref" aria-label="Número de referência da reserva">
+            Código da Reserva:&nbsp;<strong id="conf-ref">—</strong>
+          </div>
+
+          <!-- Details Card -->
+          <div class="confirmation-details" aria-label="Detalhes da reserva">
+            <div class="confirmation-details-title">Resumo da locação</div>
+            <div class="confirmation-rows" id="confirmation-rows">
+              <!-- Injected by script -->
+            </div>
+          </div>
+
+          <!-- Next steps -->
+          <div class="next-steps" aria-label="Próximos passos">
+            <div class="next-steps-title">O que acontece agora</div>
+            <div class="next-step-list">
+              <div class="next-step">
+                <div class="next-step-num" aria-hidden="true">1</div>
+                <div>
+                  <div class="next-step-content-title">Confirmação de Pagamento</div>
+                  <div class="next-step-content-desc">
+                    Se você pagou via Pix ou cartão, a aprovação é imediata. Para boleto, a compensação pode levar até 2 dias úteis.
+                  </div>
+                </div>
+              </div>
+
+              <div class="next-step">
+                <div class="next-step-num" aria-hidden="true">2</div>
+                <div>
+                  <div class="next-step-content-title">Retirada da Peça</div>
+                  <div class="next-step-content-desc">
+                    Na data de início do aluguel, retire sua peça diretamente no ponto de apoio do ateliê parceiro ou receba pelo envio combinado.
+                  </div>
+                </div>
+              </div>
+
+              <div class="next-step">
+                <div class="next-step-num" aria-hidden="true">3</div>
+                <div>
+                  <div class="next-step-content-title">Devolução e Reembolso da Caução</div>
+                  <div class="next-step-content-desc">
+                    Devolva a peça na data de término. Após a vistoria simples de integridade, o valor da caução é estornado integralmente para você.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:2.5rem;display:flex;justify-content:center;gap:1rem;">
+            <a href="minha-conta.html#reservas" class="btn btn-primary">Ver minhas reservas</a>
+            <a href="catalogo.html" class="btn btn-ghost">Continuar explorando</a>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      await initPage();
+
+      const refCode = getParam("ref") || localStorage.getItem("alugae_last_code");
+      const headingEl = document.getElementById("conf-heading");
+      const subtitleEl = document.getElementById("conf-subtitle");
+      const refEl = document.getElementById("conf-ref");
+      const rowsEl = document.getElementById("confirmation-rows");
+      const badgeContainer = document.getElementById("status-badge-container");
+      const iconEl = document.getElementById("status-icon");
+
+      if (!refCode) {
+        headingEl.textContent = "Nenhuma reserva encontrada";
+        subtitleEl.textContent = "Acesse sua conta para conferir seu histórico de pedidos.";
+        return;
+      }
+
+      refEl.textContent = refCode;
+
+      async function carregarReserva() {
+        if (!window.AlugaeAPI) return;
+        const { data: res, error } = await window.AlugaeAPI.getReservationByCode(refCode);
+
+        if (error || !res) {
+          headingEl.textContent = "Reserva registrada!";
+          subtitleEl.textContent = "Sua solicitação foi processada com sucesso no sistema.";
+          return;
+        }
+
+        refEl.textContent = res.codigo;
+
+        if (res.status === "paga") {
+          iconEl.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" fill="none"
+              stroke="var(--success)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="8 22 18 32 36 14"/>
+            </svg>
+          `;
+          headingEl.textContent = "Pagamento confirmado!";
+          subtitleEl.textContent = "Seu aluguel está 100% garantido no acervo. Preparamos sua peça com todo carinho.";
+          badgeContainer.innerHTML = `<span class="status-badge-big status-badge-paga">✓ Reserva Paga e Garantida</span>`;
+        } else if (res.status === "aguardando_pagamento") {
+          iconEl.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" fill="none"
+              stroke="#eab308" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="22" cy="22" r="18"/>
+              <polyline points="22 12 22 22 28 26"/>
+            </svg>
+          `;
+          headingEl.textContent = "Aguardando confirmação";
+          subtitleEl.innerHTML = `Identificamos sua reserva. Estamos aguardando o retorno do pagamento pelo Mercado Pago.`;
+          badgeContainer.innerHTML = `<span class="status-badge-big status-badge-aguardando">⏳ Aguardando Pagamento</span>`;
+        } else if (res.status === "expirada" || res.status === "cancelada") {
+          iconEl.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" fill="none"
+              stroke="var(--error)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="22" cy="22" r="18"/>
+              <line x1="15" y1="15" x2="29" y2="29"/>
+              <line x1="29" y1="15" x2="15" y2="29"/>
+            </svg>
+          `;
+          headingEl.textContent = "Reserva expirada ou cancelada";
+          subtitleEl.textContent = "O prazo limite para pagamento foi encerrado e as datas foram liberadas.";
+          badgeContainer.innerHTML = `<span class="status-badge-big status-badge-cancelada">✕ Cancelada</span>`;
+        }
+
+        const rowsHTML = `
+          <div class="confirmation-row">
+            <span class="confirmation-row-label">Peça</span>
+            <span class="confirmation-row-val">${escapeHTML(res.product?.titulo || "Peça ALUGAÊ")}</span>
+          </div>
+          <div class="confirmation-row">
+            <span class="confirmation-row-label">Tamanho</span>
+            <span class="confirmation-row-val">${escapeHTML(res.tamanho || "Padrão")}</span>
+          </div>
+          <div class="confirmation-row">
+            <span class="confirmation-row-label">Período de uso</span>
+            <span class="confirmation-row-val">${formatDateBR(res.data_inicio)} até ${formatDateBR(res.data_fim)} (${res.dias} dias)</span>
+          </div>
+          <div class="confirmation-row">
+            <span class="confirmation-row-label">Valor das diárias</span>
+            <span class="confirmation-row-val">${formatPrice(res.valor_diarias)}</span>
+          </div>
+          <div class="confirmation-row">
+            <span class="confirmation-row-label">Caução reembolsável</span>
+            <span class="confirmation-row-val">${formatPrice(res.valor_caucao)}</span>
+          </div>
+          <div class="confirmation-row" style="border-top:1px solid var(--border);padding-top:0.75rem;font-weight:700;">
+            <span class="confirmation-row-label">Valor total</span>
+            <span class="confirmation-row-val" style="color:var(--orange);font-size:1.15rem;">${formatPrice(res.valor_total)}</span>
+          </div>
+          ${res.metodo_pagamento ? `
+            <div class="confirmation-row">
+              <span class="confirmation-row-label">Método de pagamento</span>
+              <span class="confirmation-row-val" style="text-transform:uppercase;">${escapeHTML(res.metodo_pagamento)}</span>
+            </div>` : ""}
+        `;
+
+        rowsEl.innerHTML = rowsHTML;
+
+        // Se ainda estiver aguardando confirmação, ativa polling automático a cada 4 segundos
+        if (res.status === "aguardando_pagamento") {
+          setTimeout(carregarReserva, 4000);
+        }
+      }
+
+      await carregarReserva();
+    });
+  </script>
+</body>
+</html>

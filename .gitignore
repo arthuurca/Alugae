@@ -1,0 +1,17 @@
+# Dependências e Logs
+node_modules/
+.env
+.env.local
+.env.*.local
+*.log
+
+# Supabase local
+.branches/
+.temp/
+.supabase/
+
+# Sistema operacional e editores
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json

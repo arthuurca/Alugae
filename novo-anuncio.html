@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Criar anúncio — ALUGAÊ</title>
+  <meta name="description" content="Publique uma peça para aluguel no catálogo ALUGAÊ." />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+</head>
+<body>
+
+  <!-- Nav injected by main.js -->
+
+  <main class="page-wrapper">
+    <div class="container">
+      <nav class="catalog-breadcrumb ad-breadcrumb" aria-label="Localização na página">
+        <a href="index.html">Início</a>
+        <span class="catalog-breadcrumb-sep" aria-hidden="true">/</span>
+        <a href="catalogo.html">Catálogo</a>
+        <span class="catalog-breadcrumb-sep" aria-hidden="true">/</span>
+        <span aria-current="page">Criar anúncio</span>
+      </nav>
+
+      <section class="ad-page-header" aria-labelledby="ad-heading">
+        <p class="section-eyebrow">Moda circular</p>
+        <h1 id="ad-heading">Crie seu anúncio</h1>
+        <p>Cadastre uma peça e disponibilize-a para novas histórias.</p>
+      </section>
+
+      <!-- Aviso para perfil Locatário -->
+      <div id="anunciante-blocked-warning" class="ad-form-card" style="display:none;max-width:700px;text-align:center;padding:3rem 2rem;">
+        <div style="font-size:2.5rem;margin-bottom:1rem;color:var(--orange);">✦</div>
+        <h2 style="font-size:1.5rem;margin-bottom:0.75rem;">Apenas contas de Anunciante podem publicar peças</h2>
+        <p style="color:var(--text-3);max-width:500px;margin:0 auto 1.5rem;font-size:0.95rem;">
+          Sua conta atual está configurada como <strong>Locatário</strong> (destinada a alugar roupas). Para anunciar suas próprias peças no catálogo da ALUGAÊ, você deve criar uma conta com o perfil <strong>"Quero anunciar"</strong>.
+        </p>
+        <div style="display:flex;justify-content:center;gap:1rem;">
+          <a href="catalogo.html" class="btn btn-ghost">Explorar catálogo</a>
+          <a href="cadastro.html" class="btn btn-primary">Criar conta de Anunciante</a>
+        </div>
+      </div>
+
+      <form id="form-novo-anuncio" class="ad-form" novalidate>
+        <div class="ad-form-card">
+          <div class="ad-form-card-heading">
+            <span class="ad-form-step">01</span>
+            <div>
+              <h2>Sobre a peça</h2>
+              <p>Conte um pouco sobre o item que você quer alugar.</p>
+            </div>
+          </div>
+
+          <div class="ad-form-grid">
+            <div class="form-group ad-form-full">
+              <label class="form-label" for="loja">Nome da loja</label>
+              <input class="form-input" type="text" id="loja" maxlength="80"
+                placeholder="Ex.: Ateliê Aurora" required />
+              <span class="form-hint">Vinculado ao perfil da sua loja cadastrada.</span>
+            </div>
+
+            <div class="form-group ad-form-full">
+              <label class="form-label" for="foto">Foto da peça (máx. 5 MB)</label>
+              <input class="form-input" type="file" id="foto" accept="image/*" required />
+              <span class="form-hint">A imagem será salva com segurança no Supabase Storage.</span>
+            </div>
+
+            <div class="form-group ad-form-full">
+              <label class="form-label" for="titulo">Nome da peça</label>
+              <input class="form-input" type="text" id="titulo" maxlength="80"
+                placeholder="Ex.: Vestido longo drapeado" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="categoria">Categoria</label>
+              <select class="form-select" id="categoria" required>
+                <option value="">Selecione uma categoria</option>
+                <option value="casamento">Casamento</option>
+                <option value="formatura">Formatura</option>
+                <option value="festa">Festa</option>
+                <option value="social">Social</option>
+                <option value="casual">Casual</option>
+                <option value="praia">Praia</option>
+                <option value="fantasia">Fantasia</option>
+                <option value="acessorios">Acessórios</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="tamanhos">Tamanhos disponíveis</label>
+              <input class="form-input" type="text" id="tamanhos"
+                placeholder="Ex.: P, M, G" required />
+              <span class="form-hint">Separe os tamanhos por vírgula.</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="preco">Preço da diária (R$)</label>
+              <input class="form-input" type="number" id="preco" min="10" max="9999" step="0.01"
+                placeholder="Ex.: 150" required />
+              <span class="form-hint">Valor cobrado por cada dia de locação.</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="caucao">Caução reembolsável (R$)</label>
+              <input class="form-input" type="number" id="caucao" min="0" max="9999" step="0.01"
+                placeholder="Ex.: 200" required />
+              <span class="form-hint">Garantia devolvida integralmente após a vistoria.</span>
+            </div>
+
+            <div class="form-group ad-form-full">
+              <label class="form-label" for="descricao">Descrição detalhada</label>
+              <textarea class="form-input" id="descricao" rows="4" maxlength="500"
+                placeholder="Descreva o tecido, caimento, detalhes e ocasiões ideais..." required></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div id="form-feedback" class="ad-form-feedback" role="status" aria-live="polite"></div>
+
+        <div class="ad-form-actions">
+          <a href="catalogo.html" class="btn btn-ghost">Cancelar</a>
+          <button class="btn btn-primary btn-lg" type="submit">Publicar peça</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/novo-anuncio.js"></script>
+</body>
+</html>

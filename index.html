@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>ALUGAÊ — Use. Devolva. Repita.</title>
+  <meta name="description" content="Alugue peças de roupa para casamentos, formaturas, festas e muito mais. Use, devolva e repita. Sustentável e acessível." />
+  <meta name="theme-color" content="#18181B" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="ALUGAÊ — Use. Devolva. Repita." />
+  <meta property="og:description" content="Use. Devolva. Repita. Moda circular para qualquer ocasião." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/home.css" />
+</head>
+<body>
+
+  <!-- Nav injected by JS -->
+
+  <main class="page-wrapper" id="main-content">
+
+    <!-- ── Hero ─────────────────────────────────────────── -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="hero-bg" aria-hidden="true"></div>
+
+      <div class="hero-inner">
+        <!-- Left: copy -->
+        <div class="hero-copy page-enter">
+          <p class="hero-eyebrow" aria-hidden="true">Moda circular &amp; sustentável</p>
+
+          <h1 class="hero-title" id="hero-heading">
+            USE.<br>
+            DEVOLVA.<br>
+            <span>REPITA.</span>
+          </h1>
+
+          <p class="hero-description">
+            Alugue roupas e acessórios de qualidade para qualquer ocasião.
+            Sem compras desnecessárias, sem armário cheio, sem culpa.
+          </p>
+
+          <div class="hero-stats" role="list" aria-label="Estatísticas da plataforma">
+            <div role="listitem">
+              <div class="hero-stat-value">120+</div>
+              <div class="hero-stat-label">Peças no acervo</div>
+            </div>
+            <div role="listitem">
+              <div class="hero-stat-value">4.8</div>
+              <div class="hero-stat-label">Avaliação média</div>
+            </div>
+            <div role="listitem">
+              <div class="hero-stat-value">98%</div>
+              <div class="hero-stat-label">Entregas no prazo</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: search panel -->
+        <div class="hero-right page-enter" style="animation-delay:0.1s">
+          <div class="search-panel" role="search" aria-label="Busca por ocasião">
+            <h2 class="search-panel-title">O que você está procurando?</h2>
+
+            <p class="search-panel-label" id="occasion-label">Qual é a ocasião?</p>
+
+            <div class="occasion-grid" role="group" aria-labelledby="occasion-label">
+              <button class="occasion-btn" data-occasion="casamento"
+                id="occ-casamento"
+                aria-pressed="false"
+                aria-label="Casamento">
+                <svg class="occasion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22V12m0 0C12 7 7 5 3 7m9 5c0-5 5-7 9-5"/><path d="M5 22V17a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v5"/></svg>
+                <span class="occasion-label">Casamento</span>
+              </button>
+
+              <button class="occasion-btn" data-occasion="formatura"
+                id="occ-formatura"
+                aria-pressed="false"
+                aria-label="Formatura">
+                <svg class="occasion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                <span class="occasion-label">Formatura</span>
+              </button>
+
+              <button class="occasion-btn" data-occasion="festa"
+                id="occ-festa"
+                aria-pressed="false"
+                aria-label="Festa">
+                <svg class="occasion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span class="occasion-label">Festa</span>
+              </button>
+
+              <button class="occasion-btn" data-occasion="social"
+                id="occ-trabalho"
+                aria-pressed="false"
+                aria-label="Social">
+                <svg class="occasion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                <span class="occasion-label">Social</span>
+              </button>
+
+              <button class="occasion-btn" data-occasion="praia"
+                id="occ-praia"
+                aria-pressed="false"
+                aria-label="Praia">
+                <svg class="occasion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span class="occasion-label">Praia</span>
+              </button>
+
+              <button class="occasion-btn" data-occasion="fantasia"
+                id="occ-fantasia"
+                aria-pressed="false"
+                aria-label="Fantasia">
+                <svg class="occasion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                <span class="occasion-label">Fantasia</span>
+              </button>
+
+              <button class="occasion-btn" data-occasion="casual"
+                id="occ-casual"
+                aria-pressed="false"
+                aria-label="Casual">
+                <svg class="occasion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z"/></svg>
+                <span class="occasion-label">Casual</span>
+              </button>
+
+              <button class="occasion-btn" data-occasion="casamento"
+                id="occ-acessorios"
+                aria-pressed="false"
+                aria-label="Acessórios">
+                <svg class="occasion-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a6 6 0 0 0 6 6 6 6 0 0 0-6 6 6 6 0 0 0-6-6 6 6 0 0 0 6-6"/></svg>
+                <span class="occasion-label">Acessórios</span>
+              </button>
+            </div>
+
+            <div class="search-date-row">
+              <div class="form-group">
+                <label class="form-label" for="search-date">Data do evento</label>
+                <input
+                  class="form-input"
+                  type="date"
+                  id="search-date"
+                  name="search-date"
+                  aria-label="Data do evento"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="search-size">Tamanho</label>
+                <select class="form-input" id="search-size" name="search-size" aria-label="Tamanho">
+                  <option value="">Qualquer</option>
+                  <option value="PP">PP</option>
+                  <option value="P">P</option>
+                  <option value="M">M</option>
+                  <option value="G">G</option>
+                  <option value="GG">GG</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="search-submit" id="search-submit-btn" type="button">
+              Encontrar meu look
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── How it works ──────────────────────────────────── -->
+    <section class="how-section" aria-labelledby="how-heading">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <p class="section-label">Simples assim</p>
+            <h2 class="section-title" id="how-heading">Como funciona</h2>
+            <p class="section-subtitle">Do acervo à sua porta em quatro passos simples.</p>
+          </div>
+        </div>
+
+        <div class="how-grid" role="list">
+          <div class="how-step" role="listitem">
+            <div class="how-step-number" data-step="1" aria-label="Passo 1" role="img">
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <h3 class="how-step-title">Escolha a ocasião</h3>
+            <p class="how-step-desc">Diga para qual evento você precisa e encontre peças curadas para aquele momento.</p>
+          </div>
+
+          <div class="how-step" role="listitem">
+            <div class="how-step-number" data-step="2" aria-label="Passo 2" role="img">
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <h3 class="how-step-title">Selecione o período</h3>
+            <p class="how-step-desc">Veja a disponibilidade em tempo real e escolha as datas de retirada e devolução.</p>
+          </div>
+
+          <div class="how-step" role="listitem">
+            <div class="how-step-number" data-step="3" aria-label="Passo 3" role="img">
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <h3 class="how-step-title">Pagamento Seguro</h3>
+            <p class="how-step-desc">Pague via Pix, cartão ou boleto com total segurança via Mercado Pago Checkout Pro.</p>
+          </div>
+
+          <div class="how-step" role="listitem">
+            <div class="how-step-number" data-step="4" aria-label="Passo 4" role="img">
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h3 class="how-step-title">Arrase e devolva</h3>
+            <p class="how-step-desc">Use, brilhe, devolva. Sem complicação. Caução devolvida após vistoria.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Categories ────────────────────────────────────── -->
+    <section class="categories-section" aria-labelledby="cat-heading">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <p class="section-label">Explore o acervo</p>
+            <h2 class="section-title" id="cat-heading">Navegue por categoria</h2>
+          </div>
+          <a href="catalogo.html" class="btn btn-ghost btn-sm" aria-label="Ver todas as categorias do catálogo">
+            Ver todas
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+
+        <div class="categories-grid" role="list">
+          <a href="catalogo.html?ocasiao=casamento" class="category-card" role="listitem">
+            <div class="category-card-bg cat-casamento" aria-hidden="true"></div>
+            <div class="category-card-overlay" aria-hidden="true"></div>
+            <div class="category-card-content">
+              <div class="category-card-name">Casamento</div>
+            </div>
+          </a>
+
+          <a href="catalogo.html?ocasiao=formatura" class="category-card" role="listitem">
+            <div class="category-card-bg cat-formatura" aria-hidden="true"></div>
+            <div class="category-card-overlay" aria-hidden="true"></div>
+            <div class="category-card-content">
+              <div class="category-card-name">Formatura</div>
+            </div>
+          </a>
+
+          <a href="catalogo.html?ocasiao=festa" class="category-card" role="listitem">
+            <div class="category-card-bg cat-festa" aria-hidden="true"></div>
+            <div class="category-card-overlay" aria-hidden="true"></div>
+            <div class="category-card-content">
+              <div class="category-card-name">Festa</div>
+            </div>
+          </a>
+
+          <a href="catalogo.html?ocasiao=casual" class="category-card" role="listitem">
+            <div class="category-card-bg cat-casual" aria-hidden="true"></div>
+            <div class="category-card-overlay" aria-hidden="true"></div>
+            <div class="category-card-content">
+              <div class="category-card-name">Casual</div>
+            </div>
+          </a>
+
+          <a href="catalogo.html?ocasiao=praia" class="category-card" role="listitem">
+            <div class="category-card-bg cat-praia" aria-hidden="true"></div>
+            <div class="category-card-overlay" aria-hidden="true"></div>
+            <div class="category-card-content">
+              <div class="category-card-name">Praia</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Testimonials ───────────────────────────────────── -->
+    <section class="proof-section" aria-labelledby="proof-heading">
+      <div class="container">
+        <div class="section-header" style="justify-content:center;text-align:center">
+          <div>
+            <p class="section-label">Quem já usou</p>
+            <h2 class="section-title" id="proof-heading">O que nossos clientes dizem</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="proof-marquee-wrap" aria-label="Depoimentos de clientes" role="region">
+        <div class="proof-marquee" aria-live="off">
+          <div class="proof-card" tabindex="0" role="article">
+            <div class="proof-card-stars">${renderStars(5)}</div>
+            <p class="proof-card-text">"Usei o vestido longo para minha formatura e recebi elogios a noite toda. Qualidade impecável e entrega no prazo."</p>
+            <span class="proof-card-author">Ana Paula S. — Formatura</span>
+          </div>
+
+          <div class="proof-card" tabindex="0" role="article">
+            <div class="proof-card-stars">${renderStars(5)}</div>
+            <p class="proof-card-text">"Aluguel do terno para o casamento do meu irmão. Processo todo simples, atendimento rápido. Vale muito a pena."</p>
+            <span class="proof-card-author">Marcos R. — Casamento</span>
+          </div>
+
+          <div class="proof-card" tabindex="0" role="article">
+            <div class="proof-card-stars">${renderStars(5)}</div>
+            <p class="proof-card-text">"Ótima experiência! O vestido ficou lindo e economizei muito. Nunca mais vou comprar roupa para evento."</p>
+            <span class="proof-card-author">Juliana M. — Festa</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA banner ─────────────────────────────────────── -->
+    <section class="cta-section" aria-labelledby="cta-heading">
+      <div class="container">
+        <div class="cta-banner">
+          <h2 class="cta-banner-title" id="cta-heading">
+            Pronto para o seu próximo<br>evento?
+          </h2>
+          <p class="cta-banner-desc">
+            Explore o acervo e encontre a peça ideal. Sem compra, sem acúmulo, sem desperdício.
+          </p>
+          <a href="catalogo.html" class="btn btn-primary btn-lg" id="cta-catalog-link">
+            Explorar o catálogo
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer injected by JS -->
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      await initPage();
+
+      /* ── Occasion buttons ─── */
+      const state = { occasion: "" };
+
+      document.querySelectorAll(".occasion-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const occ = btn.dataset.occasion;
+          document.querySelectorAll(".occasion-btn").forEach(b => {
+            b.classList.remove("selected");
+            b.setAttribute("aria-pressed", "false");
+          });
+          if (state.occasion === occ) {
+            state.occasion = "";
+          } else {
+            state.occasion = occ;
+            btn.classList.add("selected");
+            btn.setAttribute("aria-pressed", "true");
+          }
+        });
+      });
+
+      /* ── Search submit ─── */
+      document.getElementById("search-submit-btn").addEventListener("click", () => {
+        const params = {};
+        if (state.occasion) params.ocasiao = state.occasion;
+        const date = document.getElementById("search-date").value;
+        if (date) params.data = date;
+        const size = document.getElementById("search-size").value;
+        if (size) params.tamanho = size;
+        navigateTo("catalogo.html", params);
+      });
+
+      const dateInput = document.getElementById("search-date");
+      if (dateInput) {
+        dateInput.min = todayStr();
+      }
+    });
+  </script>
+
+</body>
+</html>
