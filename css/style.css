@@ -281,7 +281,7 @@ flex-shrink: 0;
 .nav-cta {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #fff;
+  color: #18181B !important;
   background: var(--orange);
   padding: 8px 20px;
   border-radius: var(--r-sm);
