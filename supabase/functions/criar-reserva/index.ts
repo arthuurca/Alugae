@@ -100,7 +100,7 @@ serve(async (req: Request) => {
     // 1. Busca produto no banco (NUNCA confia no preço enviado pelo frontend)
     const { data: product, error: prodError } = await supabaseAdmin
       .from("products")
-      .select("id, titulo, preco_diaria, ativo, owner_id")
+      .select("id, titulo, preco_diaria, caucao, ativo, owner_id")
       .eq("id", product_id)
       .single();
 
@@ -141,10 +141,9 @@ serve(async (req: Request) => {
 
     // 4. Cálculo do valor total no servidor
     const precoDiaria = Number(product.preco_diaria);
+    const caucao = Number(product.caucao) || 0;
     const valorDiarias = Number((precoDiaria * diffDays).toFixed(2));
-    const taxaPlataforma = Number((valorDiarias * 0.10).toFixed(2));
-    const valorRepasse = Number((valorDiarias - taxaPlataforma).toFixed(2));
-    const valorTotal = valorDiarias;
+    const valorTotal = Number((valorDiarias + caucao).toFixed(2));
 
     // Código da reserva amigável único: RES-XXXXX
     const codigo = "RES-" + Math.random().toString(36).substring(2, 7).toUpperCase();
@@ -164,11 +163,8 @@ serve(async (req: Request) => {
         data_fim,
         dias: diffDays,
         valor_diarias: valorDiarias,
-        valor_caucao: 0,
+        valor_caucao: caucao,
         valor_total: valorTotal,
-        valor_bruto: valorDiarias,
-        taxa_plataforma: taxaPlataforma,
-        valor_repasse: valorRepasse,
         status: "aguardando_pagamento",
         expires_at: expiresAt.toISOString(),
         notes: notes || null,
@@ -202,6 +198,17 @@ serve(async (req: Request) => {
       },
     ];
 
+    if (caucao > 0) {
+      mpItems.push({
+        id: `CAUCAO-${product.id}`,
+        title: `Caução Reembolsável - ${product.titulo}`,
+        description: "Valor reembolsado integralmente após a devolução e vistoria da peça.",
+        category_id: "deposit",
+        quantity: 1,
+        currency_id: "BRL",
+        unit_price: caucao,
+      });
+    }
 
     const preferencePayload = {
       items: mpItems,

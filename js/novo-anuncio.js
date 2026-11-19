@@ -26,7 +26,7 @@
       return;
     }
 
-    if (!["anunciante", "ambos"].includes(user.profile?.tipo)) {
+    if (user.profile?.tipo !== "anunciante") {
       // Perfil locatário bloqueado de anunciar
       form.style.display = "none";
       if (blockedWarning) {
@@ -84,6 +84,7 @@
           categoria: document.getElementById("categoria").value,
           tamanhos: [...new Set(sizes)],
           preco_diaria: Number(document.getElementById("preco").value),
+          caucao: Number(document.getElementById("caucao").value) || 0,
           descricao: document.getElementById("descricao").value.trim(),
           imageFile,
         });

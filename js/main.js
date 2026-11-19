@@ -225,7 +225,7 @@ function buildNav(user = null) {
   let authMenuHTML = "";
   if (user) {
     const nomeExibicao = escapeHTML(user.profile?.nome || user.email.split("@")[0]);
-    const isAnunciante = ["anunciante", "ambos"].includes(user.profile?.tipo);
+    const isAnunciante = user.profile?.tipo === "anunciante";
 
     authMenuHTML = `
       <div class="nav-user-dropdown" style="position:relative;">
@@ -368,7 +368,6 @@ function buildFooter() {
             <li><a href="index.html#how-heading">Como funciona</a></li>
             <li><a href="catalogo.html">Políticas de aluguel</a></li>
             <li><a href="login.html">Área do cliente</a></li>
-            <li><a href="privacidade.html">Política de Privacidade</a></li>
           </ul>
         </div>
       </div>

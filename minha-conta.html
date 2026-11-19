@@ -88,7 +88,6 @@
         <aside class="account-tabs" role="tablist">
           <button class="account-tab-btn active" data-tab="perfil" role="tab" aria-selected="true">Meu Perfil</button>
           <button class="account-tab-btn" data-tab="reservas" role="tab" aria-selected="false">Minhas Reservas</button>
-          <button class="account-tab-btn" data-tab="conversas" role="tab" aria-selected="false">Conversas</button>
           <button class="account-tab-btn" id="tab-btn-anuncios" data-tab="anuncios" role="tab" aria-selected="false" style="display:none;">Meus Anúncios</button>
         </aside>
 
@@ -148,11 +147,6 @@
                 <div class="ad-form-full" style="margin-top:1.25rem;">
                   <button type="submit" class="btn btn-primary">Salvar alterações</button>
                 </div>
-                <div id="activate-advertiser" class="ad-form-full" style="display:none;margin-top:1rem;border-top:1px solid var(--border);padding-top:1.25rem;">
-                  <h3 style="font-size:1.05rem;margin-bottom:.5rem;">Ativar função de anunciante</h3>
-                  <p style="font-size:.875rem;color:var(--text-3);margin-bottom:.75rem;">Sua conta continuará funcionando para alugar peças e passará a permitir publicar anúncios.</p>
-                  <button type="button" id="btn-enable-advertiser" class="btn btn-primary btn-sm">Ativar anúncios nesta conta</button>
-                </div>
               </form>
             </div>
           </section>
@@ -170,21 +164,6 @@
           </section>
 
           <!-- ── TAB 3: ANÚNCIOS DO ANUNCIANTE ── -->
-          <section id="section-conversas" class="account-section" role="tabpanel">
-            <div class="account-card page-enter">
-              <h2 style="font-size:1.5rem;margin-bottom:.25rem;">Conversas</h2>
-              <p style="color:var(--text-3);font-size:.9rem;margin-bottom:1.25rem;">Conversa vinculada à reserva com o locatário ou anunciante.</p>
-              <div id="conversas-lista"><p style="color:var(--text-3);">Carregando conversas...</p></div>
-              <div id="chat-box" style="display:none;margin-top:1rem;border:1px solid var(--border);border-radius:var(--r-md);padding:1rem;">
-                <div id="chat-messages" style="max-height:320px;overflow:auto;margin-bottom:1rem;"></div>
-                <form id="chat-form" style="display:flex;gap:.75rem;">
-                  <input id="chat-input" class="form-input" maxlength="2000" required placeholder="Escreva uma mensagem..." />
-                  <button class="btn btn-primary btn-sm" type="submit">Enviar</button>
-                </form>
-              </div>
-            </div>
-          </section>
-
           <section id="section-anuncios" class="account-section" role="tabpanel">
             <div class="account-card page-enter">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
@@ -194,13 +173,6 @@
                 </div>
                 <a href="novo-anuncio.html" class="btn btn-primary btn-sm">+ Anunciar peça</a>
               </div>
-
-                <div style="border:1px solid var(--border);border-radius:var(--r-md);padding:1rem;margin-bottom:1.25rem;">
-                  <strong>Modelo de repasse</strong>
-                  <p style="font-size:.875rem;color:var(--text-3);margin:.35rem 0 0;">
-                    Comissão Alugaê: 10% do valor das diárias. Além dela, o anunciante recebe o valor líquido após a taxa do método de pagamento escolhido no Mercado Pago (Pix, cartão ou boleto). Configuração bancária e transferência automática precisam ser ativadas no Mercado Pago.
-                  </p>
-                </div>
 
               <div id="anuncios-lista">
                 <p style="color:var(--text-3);">Carregando peças...</p>
@@ -217,6 +189,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/data.js"></script>
   <script src="js/main.js"></script>
 
   <script>
@@ -238,7 +211,7 @@
       const sections = document.querySelectorAll(".account-section");
       const tabAnunciosBtn = document.getElementById("tab-btn-anuncios");
 
-      if (["anunciante", "ambos"].includes(user.profile?.tipo)) {
+      if (user.profile?.tipo === "anunciante") {
         tabAnunciosBtn.style.display = "block";
       }
 
@@ -259,7 +232,7 @@
 
       // Abre aba pelo hash da URL se houver (#reservas ou #anuncios)
       const hash = window.location.hash.replace("#", "");
-      if (["perfil", "reservas", "conversas", "anuncios"].includes(hash)) {
+      if (["perfil", "reservas", "anuncios"].includes(hash)) {
         switchTab(hash);
       }
 
@@ -267,32 +240,9 @@
       document.getElementById("prof-nome").value = user.profile?.nome || "";
       document.getElementById("prof-email").value = user.email || "";
       document.getElementById("prof-telefone").value = user.profile?.telefone || "";
-      const canAdvertise = ["anunciante", "ambos"].includes(user.profile?.tipo);
-      document.getElementById("prof-tipo").value = canAdvertise
-        ? (user.profile?.tipo === "ambos" ? "Locatário + Anunciante" : "Anunciante")
-        : "Locatário";
+      document.getElementById("prof-tipo").value = user.profile?.tipo === "anunciante" ? "Anunciante (Lojista)" : "Locatário";
 
-      if (!canAdvertise) {
-        document.getElementById("activate-advertiser").style.display = "block";
-      }
-
-      document.getElementById("btn-enable-advertiser")?.addEventListener("click", async () => {
-        const nomeLoja = prompt("Nome da loja ou ateliê:");
-        const cidade = prompt("Cidade / UF:");
-        if (!nomeLoja || !cidade) return;
-        const { error } = await window.AlugaeAPI.enableAdvertiserProfile({
-          nome_loja: nomeLoja.trim(),
-          cidade: cidade.trim(),
-          descricao_loja: "Loja parceira da ALUGAÊ",
-        });
-        if (error) {
-          alert("Não foi possível ativar os anúncios: " + error.message);
-          return;
-        }
-        window.location.reload();
-      });
-
-      if (canAdvertise) {
+      if (user.profile?.tipo === "anunciante") {
         document.getElementById("prof-loja-group").style.display = "block";
         document.getElementById("prof-nome-loja").value = user.profile?.nome_loja || "";
         document.getElementById("prof-cidade").value = user.profile?.cidade || "";
@@ -350,75 +300,8 @@
         `).join("");
       }
 
-      // Conversas vinculadas às reservas do usuário
-      const conversasListEl = document.getElementById("conversas-lista");
-      let reservationOptions = reservas || [];
-      if (canAdvertise) {
-        const ownerResult = await window.AlugaeAPI.getMyOwnerReservations();
-        if (ownerResult.data) reservationOptions = [...reservationOptions, ...ownerResult.data];
-      }
-      const uniqueReservations = [...new Map(reservationOptions.map(r => [r.id, r])).values()];
-
-      if (uniqueReservations.length === 0) {
-        conversasListEl.innerHTML = `<p style="color:var(--text-3);padding:.75rem 0;">Você ainda não possui reservas para iniciar uma conversa.</p>`;
-      } else {
-        conversasListEl.innerHTML = uniqueReservations.map(r => `
-          <button type="button" class="reservation-item btn-chat-reservation" data-reservation-id="${r.id}" style="width:100%;border:0;border-top:1px solid var(--border);background:none;color:var(--text);cursor:pointer;text-align:left;">
-            <div>
-              <strong>${escapeHTML(r.product?.titulo || "Reserva")}</strong>
-              <span style="display:block;font-size:.82rem;color:var(--text-3);">${r.codigo} • ${formatDateBR(r.data_inicio)} a ${formatDateBR(r.data_fim)}</span>
-            </div>
-            <span style="color:var(--orange);font-weight:700;">Abrir chat</span>
-          </button>
-        `).join("");
-      }
-
-      let activeConversationId = null;
-      document.querySelectorAll(".btn-chat-reservation").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          try {
-            const conversation = await window.AlugaeAPI.getOrCreateConversation(btn.dataset.reservationId);
-            activeConversationId = conversation.id;
-            document.getElementById("chat-box").style.display = "block";
-            const { data: messages, error } = await window.AlugaeAPI.getMessages(activeConversationId);
-            if (error) throw error;
-            document.getElementById("chat-messages").innerHTML = (messages || []).map(m => `
-              <div style="margin:.5rem 0;text-align:${m.sender_id === user.id ? "right" : "left"};">
-                <span style="display:inline-block;max-width:80%;padding:.55rem .75rem;border-radius:.75rem;background:${m.sender_id === user.id ? "var(--orange)" : "var(--surface-2)"};color:${m.sender_id === user.id ? "#fff" : "var(--text)"};">
-                  ${escapeHTML(m.body)}
-                </span>
-              </div>
-            `).join("") || `<p style="color:var(--text-3);font-size:.85rem;">Nenhuma mensagem ainda.</p>`;
-          } catch (err) {
-            alert(err.message || "Não foi possível abrir o chat.");
-          }
-        });
-      });
-
-      document.getElementById("chat-form")?.addEventListener("submit", async event => {
-        event.preventDefault();
-        if (!activeConversationId) return;
-        const input = document.getElementById("chat-input");
-        const body = input.value.trim();
-        if (!body) return;
-        const { error } = await window.AlugaeAPI.sendMessage(activeConversationId, body);
-        if (error) {
-          alert(error.message || "Não foi possível enviar a mensagem.");
-          return;
-        }
-        input.value = "";
-        const result = await window.AlugaeAPI.getMessages(activeConversationId);
-        document.getElementById("chat-messages").innerHTML = (result.data || []).map(m => `
-          <div style="margin:.5rem 0;text-align:${m.sender_id === user.id ? "right" : "left"};">
-            <span style="display:inline-block;max-width:80%;padding:.55rem .75rem;border-radius:.75rem;background:${m.sender_id === user.id ? "var(--orange)" : "var(--surface-2)"};color:${m.sender_id === user.id ? "#fff" : "var(--text)"};">
-              ${escapeHTML(m.body)}
-            </span>
-          </div>
-        `).join("");
-      });
-
       // 4. Se for anunciante, carrega as Peças Anunciadas
-      if (canAdvertise) {
+      if (user.profile?.tipo === "anunciante") {
         const anunciosListEl = document.getElementById("anuncios-lista");
         const { data: meusProdutos } = await window.AlugaeAPI.getMyProducts();
 
@@ -435,7 +318,7 @@
                 </div>
                 <div>
                   <strong>${escapeHTML(p.titulo)}</strong>
-                  <span style="font-size:0.85rem;color:var(--text-3);display:block;">${formatPrice(p.preco_diaria)} / dia</span>
+                  <span style="font-size:0.85rem;color:var(--text-3);display:block;">${formatPrice(p.preco_diaria)} / dia • Caução: ${formatPrice(p.caucao)}</span>
                 </div>
               </div>
               <div style="display:flex;align-items:center;gap:0.75rem;">

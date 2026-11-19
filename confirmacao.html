@@ -107,9 +107,9 @@
               <div class="next-step">
                 <div class="next-step-num" aria-hidden="true">3</div>
                 <div>
-                  <div class="next-step-content-title">Devolução da Peça</div>
+                  <div class="next-step-content-title">Devolução e Reembolso da Caução</div>
                   <div class="next-step-content-desc">
-                    Devolva a peça na data de término após combinar o local e o horário com o anunciante.
+                    Devolva a peça na data de término. Após a vistoria simples de integridade, o valor da caução é estornado integralmente para você.
                   </div>
                 </div>
               </div>
@@ -130,6 +130,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/data.js"></script>
   <script src="js/main.js"></script>
 
   <script>
@@ -216,17 +217,9 @@
             <span class="confirmation-row-label">Valor das diárias</span>
             <span class="confirmation-row-val">${formatPrice(res.valor_diarias)}</span>
           </div>
-          ${res.taxa_plataforma ? `
-            <div class="confirmation-row">
-              <span class="confirmation-row-label">Comissão Alugaê (10%)</span>
-              <span class="confirmation-row-val">${formatPrice(res.taxa_plataforma)}</span>
-            </div>` : ""}
-          ${res.taxa_mercado_pago ? `
-            <div class="confirmation-row">
-              <span class="confirmation-row-label">Taxa Mercado Pago</span>
-              <span class="confirmation-row-val">${formatPrice(res.taxa_mercado_pago)}</span>
-            </div>` : ""}
           <div class="confirmation-row">
+            <span class="confirmation-row-label">Caução reembolsável</span>
+            <span class="confirmation-row-val">${formatPrice(res.valor_caucao)}</span>
           </div>
           <div class="confirmation-row" style="border-top:1px solid var(--border);padding-top:0.75rem;font-weight:700;">
             <span class="confirmation-row-label">Valor total</span>
