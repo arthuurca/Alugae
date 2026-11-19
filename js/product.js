@@ -43,7 +43,6 @@
           size: (data.tamanhos || []).join(" ao "),
           measurements: data.medidas || {},
           rentalPrice: Number(data.preco_diaria),
-          deposit: Number(data.caucao) || 0,
           rating: Number(data.rating) || 5.0,
           reviews: data.reviews || 0,
           colorScheme: data.categoria,
@@ -157,7 +156,6 @@
             <span style="color:var(--text-3);font-size:0.95rem;">por dia</span>
           </div>
           <div style="font-size:0.875rem;color:var(--text-2);">
-            Caução reembolsável: <strong>${formatPrice(p.deposit)}</strong> (devolvida após o uso)
           </div>
         </div>`;
     }
@@ -223,7 +221,7 @@
 
     const days = rentalDays(state.pickupDate, state.returnDate);
     const totalDiarias = state.product.rentalPrice * days;
-    const totalGeral = totalDiarias + state.product.deposit;
+    const totalGeral = totalDiarias;
 
     banner.style.display = "block";
     banner.innerHTML = `
@@ -233,8 +231,6 @@
           <span>${formatPrice(totalDiarias)}</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:0.5rem;color:var(--text-3);">
-          <span>Caução reembolsável:</span>
-          <span>${formatPrice(state.product.deposit)}</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:700;border-top:1px solid var(--border);padding-top:0.5rem;">
           <span>Total previsto:</span>

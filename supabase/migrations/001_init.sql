@@ -126,6 +126,8 @@ DECLARE
   v_nome_loja TEXT;
   v_cidade TEXT;
   v_descricao_loja TEXT;
+  v_lgpd_at TIMESTAMPTZ;
+  v_lgpd_version TEXT;
 BEGIN
   v_nome := COALESCE(NEW.raw_user_meta_data->>'nome', split_part(NEW.email, '@', 1));
   v_tipo := COALESCE(NEW.raw_user_meta_data->>'tipo', 'locatario');
@@ -133,15 +135,19 @@ BEGIN
   v_nome_loja := NEW.raw_user_meta_data->>'nome_loja';
   v_cidade := NEW.raw_user_meta_data->>'cidade';
   v_descricao_loja := NEW.raw_user_meta_data->>'descricao_loja';
+  v_lgpd_at := NULLIF(NEW.raw_user_meta_data->>'consentimento_lgpd_at', '')::TIMESTAMPTZ;
+  v_lgpd_version := NEW.raw_user_meta_data->>'consentimento_lgpd_versao';
 
-  IF v_tipo NOT IN ('locatario', 'anunciante') THEN
+  IF v_tipo NOT IN ('locatario', 'anunciante', 'ambos') THEN
     v_tipo := 'locatario';
   END IF;
 
   INSERT INTO public.profiles (
-    id, nome, telefone, tipo, nome_loja, cidade, descricao_loja, created_at, updated_at
+    id, nome, telefone, tipo, nome_loja, cidade, descricao_loja,
+    consentimento_lgpd_at, consentimento_lgpd_versao, created_at, updated_at
   ) VALUES (
     NEW.id, v_nome, v_telefone, v_tipo, v_nome_loja, v_cidade, v_descricao_loja,
+    v_lgpd_at, v_lgpd_version,
     timezone('utc', now()), timezone('utc', now())
   )
   ON CONFLICT (id) DO UPDATE SET
@@ -150,6 +156,8 @@ BEGIN
     nome_loja = COALESCE(EXCLUDED.nome_loja, public.profiles.nome_loja),
     cidade = COALESCE(EXCLUDED.cidade, public.profiles.cidade),
     descricao_loja = COALESCE(EXCLUDED.descricao_loja, public.profiles.descricao_loja),
+    consentimento_lgpd_at = COALESCE(EXCLUDED.consentimento_lgpd_at, public.profiles.consentimento_lgpd_at),
+    consentimento_lgpd_versao = COALESCE(EXCLUDED.consentimento_lgpd_versao, public.profiles.consentimento_lgpd_versao),
     updated_at = timezone('utc', now());
 
   RETURN NEW;
@@ -189,7 +197,7 @@ ALTER TABLE public.reservations ENABLE ROW LEVEL SECURITY;
 -- Qualquer pessoa pode visualizar informações públicas de lojas/anunciantes (nome_loja, cidade, descricao_loja)
 CREATE POLICY "Lojas com visualização pública"
   ON public.profiles FOR SELECT
-  USING (tipo = 'anunciante');
+  USING (tipo IN ('anunciante', 'ambos'));
 
 -- Usuário autenticado pode ler seu próprio perfil completo (incluindo email, telefone)
 CREATE POLICY "Usuário lê o próprio perfil"

@@ -8,6 +8,6 @@ REVOKE SELECT ON public.profiles FROM anon;
 CREATE OR REPLACE VIEW public.public_profiles AS
 SELECT id, nome, nome_loja, cidade, descricao_loja
 FROM public.profiles
-WHERE tipo = 'anunciante';
+WHERE tipo IN ('anunciante', 'ambos');
 
 GRANT SELECT ON public.public_profiles TO anon, authenticated;

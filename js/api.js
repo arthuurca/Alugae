@@ -83,6 +83,8 @@
             nome_loja: nome_loja || null,
             cidade: cidade || null,
             descricao_loja: descricao_loja || null,
+            consentimento_lgpd_at: new Date().toISOString(),
+            consentimento_lgpd_versao: "1.0",
           },
         },
       });
@@ -140,6 +142,80 @@
         .from("profiles")
         .update(cleanUpdates)
         .eq("id", user.id);
+    },
+
+    async enableAdvertiserProfile({ nome_loja, cidade, descricao_loja }) {
+      const client = getClient();
+      const user = (await client.auth.getUser()).data.user;
+      if (!user) throw new Error("Usuário não autenticado");
+
+      const { data: profile } = await client
+        .from("profiles")
+        .select("tipo")
+        .eq("id", user.id)
+        .single();
+
+      const tipo = profile?.tipo === "locatario" ? "ambos" : "anunciante";
+      return await client
+        .from("profiles")
+        .update({ tipo, nome_loja, cidade, descricao_loja })
+        .eq("id", user.id);
+    },
+
+    async getOrCreateConversation(reservationId) {
+      const client = getClient();
+      const { data: reservation, error } = await client
+        .from("reservations")
+        .select("id, renter_id, product:product_id (owner_id)")
+        .eq("id", reservationId)
+        .single();
+      if (error) throw error;
+
+      const user = (await client.auth.getUser()).data.user;
+      if (!user) throw new Error("Usuário não autenticado");
+      const ownerId = reservation.product?.owner_id;
+      if (!ownerId) throw new Error("Anunciante não encontrado.");
+
+      let { data: conversation } = await client
+        .from("conversations")
+        .select("*")
+        .eq("reservation_id", reservationId)
+        .maybeSingle();
+
+      if (!conversation) {
+        const created = await client
+          .from("conversations")
+          .insert({
+            reservation_id: reservationId,
+            renter_id: reservation.renter_id,
+            owner_id: ownerId,
+          })
+          .select()
+          .single();
+        if (created.error) throw created.error;
+        conversation = created.data;
+      }
+      return conversation;
+    },
+
+    async getMessages(conversationId) {
+      const client = getClient();
+      return await client
+        .from("messages")
+        .select("id, sender_id, body, created_at")
+        .eq("conversation_id", conversationId)
+        .order("created_at", { ascending: true });
+    },
+
+    async sendMessage(conversationId, body) {
+      const client = getClient();
+      const user = (await client.auth.getUser()).data.user;
+      if (!user) throw new Error("Usuário não autenticado");
+      return await client
+        .from("messages")
+        .insert({ conversation_id: conversationId, sender_id: user.id, body })
+        .select()
+        .single();
     },
 
     // ── PRODUCTS ──────────────────────────────────────────────
@@ -216,7 +292,7 @@
     /**
      * Criação de novo anúncio com upload de imagem para o Storage
      */
-    async createProduct({ titulo, categoria, tamanhos, preco_diaria, caucao, descricao, imageFile }) {
+    async createProduct({ titulo, categoria, tamanhos, preco_diaria, descricao, imageFile }) {
       const client = getClient();
       const user = (await client.auth.getUser()).data.user;
       if (!user) throw new Error("Você precisa estar logado para publicar uma peça.");
@@ -262,7 +338,6 @@
           categoria,
           tamanhos,
           preco_diaria: Number(preco_diaria),
-          caucao: Number(caucao) || 0,
           descricao,
           medidas: { padrao: "Medidas sob consulta" },
           imagens: imagensUrls,
@@ -345,7 +420,7 @@
         .select(`
           *,
           product:product_id (
-            id, titulo, categoria, imagens, preco_diaria, caucao, art_type, art_color
+            id, titulo, categoria, imagens, preco_diaria, art_type, art_color
           )
         `)
         .eq("codigo", codigo)

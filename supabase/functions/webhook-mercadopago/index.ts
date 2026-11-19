@@ -11,6 +11,46 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+function roundMoney(value: number): number {
+  return Number(value.toFixed(2));
+}
+
+function calcularTaxas(gross: number, payment: any): { taxaPlataforma: number; taxaMercadoPago: number; valorRepasse: number } {
+  const taxaPlataforma = roundMoney(gross * 0.10);
+  let taxaMercadoPago = 0;
+
+  // Quando disponível, usa o valor oficial calculado pelo Mercado Pago.
+  // Isso garante precisão para crédito em cada modalidade de recebimento.
+  if (Array.isArray(payment?.fee_details)) {
+    taxaMercadoPago = roundMoney(
+      payment.fee_details.reduce((sum: number, fee: any) => {
+        const feeValue = Number(fee.fee_amount ?? fee.amount ?? 0);
+        return sum + (Number.isFinite(feeValue) ? feeValue : 0);
+      }, 0)
+    );
+  }
+
+  // Fallback apenas para notificações em que fee_details não seja enviado.
+  if (taxaMercadoPago === 0) {
+    const paymentType = String(payment?.payment_type_id || "").toLowerCase();
+    const paymentMethod = String(payment?.payment_method_id || "").toLowerCase();
+
+    if (paymentType === "ticket" || paymentMethod === "bolbradesco" || paymentMethod === "ticket") {
+      taxaMercadoPago = 3.99;
+    } else if (paymentMethod === "pix" || paymentType === "bank_transfer") {
+      taxaMercadoPago = roundMoney(gross * 0.0099);
+    } else if (paymentMethod === "credit_card" || paymentType === "credit_card") {
+      // Quando a preferência não informa a opção de recebimento, usa o cenário na hora.
+      taxaMercadoPago = roundMoney(gross * 0.0498);
+    } else if (paymentMethod === "debit_card" || paymentType === "debit_card") {
+      taxaMercadoPago = roundMoney(gross * 0.0498);
+    }
+  }
+
+  const valorRepasse = roundMoney(Math.max(0, gross - taxaPlataforma - taxaMercadoPago));
+  return { taxaPlataforma, taxaMercadoPago, valorRepasse };
+}
+
 /**
  * Validação de assinatura HMAC SHA-256 do Mercado Pago
  * Header: x-signature (ts=...,v1=...)
@@ -174,7 +214,7 @@ serve(async (req: Request) => {
     // 2. Busca a reserva no banco de dados
     const { data: reservation, error: resErr } = await supabaseAdmin
       .from("reservations")
-      .select("id, status, codigo")
+      .select("id, status, codigo, valor_diarias, data_fim")
       .eq("id", externalReference)
       .single();
 
@@ -200,10 +240,20 @@ serve(async (req: Request) => {
       newStatus = "aguardando_pagamento";
     }
 
+    const gross = roundMoney(Number(reservation.valor_diarias || 0));
+    const paymentTaxes = mpStatus === "approved"
+      ? calcularTaxas(gross, payment)
+      : null;
+
     const { error: updateErr } = await supabaseAdmin
       .from("reservations")
       .update({
         status: newStatus,
+        repasse_status: newStatus === "paga" ? "pendente" : reservation.status === "paga" ? "nao_aplicavel" : "pendente",
+        taxa_plataforma: paymentTaxes?.taxaPlataforma,
+        taxa_mercado_pago: paymentTaxes?.taxaMercadoPago,
+        valor_repasse: paymentTaxes?.valorRepasse,
+        repasse_previsto_para: mpStatus === "approved" ? new Date(`${reservation.data_fim}T23:59:59Z`).toISOString() : undefined,
         mp_payment_id: String(paymentId),
         metodo_pagamento: paymentMethodId,
         updated_at: new Date().toISOString(),

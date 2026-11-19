@@ -72,6 +72,12 @@
       const nomeLoja = document.getElementById("nome-loja")?.value.trim() || null;
       const cidade = document.getElementById("cidade")?.value.trim() || null;
       const descLoja = document.getElementById("descricao-loja")?.value.trim() || null;
+      const lgpdConsent = document.getElementById("lgpd-consent")?.checked;
+
+      if (!lgpdConsent) {
+        showError(feedbackEl, "É necessário aceitar a Política de Privacidade.");
+        return;
+      }
 
       if (senha.length < 8) {
         showError(feedbackEl, "A senha deve ter no mínimo 8 caracteres.");
