@@ -75,9 +75,25 @@
     if (returnInput && returnD) returnInput.value = returnD;
 
     // Atualiza resumo
-    renderSummary(product, size, pickup, returnD);
+    const getSelectedPaymentMethod = () =>
+      document.querySelector('input[name="payment_method"]:checked')?.value || "pix_direto";
 
-    // Validação e Submit para o Checkout Pro
+    const updateCheckoutUI = () => {
+      const method = getSelectedPaymentMethod();
+      renderSummary(product, size, pickup, returnD, method);
+      const submitBtn = document.getElementById("submit-btn");
+      if (submitBtn && !submitBtn.disabled) {
+        submitBtn.textContent =
+          method === "pix_direto" ? "Gerar QR Code Pix" : "Ir para o pagamento seguro";
+      }
+    };
+
+    document.querySelectorAll('input[name="payment_method"]').forEach((radio) => {
+      radio.addEventListener("change", updateCheckoutUI);
+    });
+    updateCheckoutUI();
+
+    // Validação e Submit para o Checkout (Pix Direto ou Mercado Pago)
     const form = document.getElementById("reservation-form");
     if (form) {
       form.addEventListener("submit", async (e) => {
@@ -91,6 +107,7 @@
 
         const notes = document.getElementById("field-notes")?.value.trim() || "";
         const submitBtn = document.getElementById("submit-btn");
+        const paymentMethod = getSelectedPaymentMethod();
 
         try {
           await window.AlugaePayment.iniciarCheckout({
@@ -99,6 +116,7 @@
             dataFim: returnD,
             tamanho: size,
             notes,
+            paymentMethod,
             btnElement: submitBtn,
           });
         } catch (err) {
@@ -108,7 +126,7 @@
     }
   }
 
-  function renderSummary(product, size, pickup, returnD) {
+  function renderSummary(product, size, pickup, returnD, paymentMethod = "pix_direto") {
     const imgEl = document.getElementById("summary-product-img");
     if (imgEl) {
       imgEl.innerHTML = product.imagePath
@@ -138,17 +156,29 @@
     if (daysEl) daysEl.textContent = `${effectiveDays} ${effectiveDays === 1 ? "dia" : "dias"}`;
 
     const calculatedRentalPrice = product.rentalPrice * effectiveDays;
+    const isPixDireto = paymentMethod === "pix_direto";
+    const pixDiscount = isPixDireto ? Number((calculatedRentalPrice * 0.0099).toFixed(2)) : 0;
+    const finalTotal = Number((calculatedRentalPrice - pixDiscount).toFixed(2));
 
     const rentalEl = document.getElementById("summary-rental");
     if (rentalEl) rentalEl.textContent = formatPrice(calculatedRentalPrice);
 
     const platformFeeEl = document.getElementById("summary-platform-fee");
     if (platformFeeEl) {
-      platformFeeEl.textContent = `10% (${formatPrice(calculatedRentalPrice * 0.10)})`;
+      platformFeeEl.textContent = `10% (${formatPrice(finalTotal * 0.10)})`;
+    }
+
+    const pixDiscountRowEl = document.getElementById("summary-pix-discount-row");
+    const pixDiscountEl = document.getElementById("summary-pix-discount");
+    if (pixDiscountRowEl) {
+      pixDiscountRowEl.style.display = isPixDireto ? "flex" : "none";
+    }
+    if (pixDiscountEl) {
+      pixDiscountEl.textContent = `- ${formatPrice(pixDiscount)}`;
     }
 
     const totalEl = document.getElementById("summary-total");
-    if (totalEl) totalEl.textContent = formatPrice(calculatedRentalPrice);
+    if (totalEl) totalEl.textContent = formatPrice(finalTotal);
 
   }
 

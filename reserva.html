@@ -94,15 +94,33 @@
                   </div>
                 </div>
 
-                <!-- Security and Payment method notice -->
-                <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:1.25rem;margin-bottom:1.75rem;">
-                  <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    <strong style="font-size:0.95rem;">Pagamento 100% Protegido via Mercado Pago</strong>
+                <!-- Payment method choice -->
+                <div style="margin-bottom:1.75rem;">
+                  <h2 style="font-size:1.05rem;margin-bottom:0.75rem;">Forma de pagamento</h2>
+                  <div style="display:grid;gap:0.75rem;">
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:1rem;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface-2);cursor:pointer;">
+                      <input type="radio" name="payment_method" value="pix_direto" checked style="margin-top:3px;" />
+                      <div>
+                        <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                          <strong style="font-size:0.95rem;">Pix Direto (QR Code no site)</strong>
+                          <span class="badge badge-orange" style="font-size:0.72rem;">0,99% de desconto • Sem taxa da API</span>
+                        </div>
+                        <p style="font-size:0.83rem;color:var(--text-3);margin:0.3rem 0 0;">
+                          Pague direto via QR Code ou Pix Copia e Cola sem a taxa do Mercado Pago e envie o comprovante no chat da reserva.
+                        </p>
+                      </div>
+                    </label>
+
+                    <label style="display:flex;align-items:flex-start;gap:0.75rem;padding:1rem;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface-2);cursor:pointer;">
+                      <input type="radio" name="payment_method" value="mercadopago" style="margin-top:3px;" />
+                      <div>
+                        <strong style="font-size:0.95rem;">Mercado Pago (Cartão até 6x, Boleto ou Pix automático)</strong>
+                        <p style="font-size:0.83rem;color:var(--text-3);margin:0.3rem 0 0;">
+                          Você será redirecionado ao Checkout Pro oficial do Mercado Pago para aprovação automática.
+                        </p>
+                      </div>
+                    </label>
                   </div>
-                  <p style="font-size:0.85rem;color:var(--text-3);margin:0;">
-                    Ao clicar no botão abaixo, você será redirecionado para o Checkout Pro oficial do Mercado Pago para pagar com <strong>Pix (aprovação imediata), Cartão de Crédito (até 6x) ou Boleto</strong>. Nosso site nunca tem acesso aos dados do seu cartão.
-                  </p>
                 </div>
 
                 <!-- Terms checkbox -->
@@ -159,6 +177,10 @@
                 <div class="summary-row">
                   <span class="summary-row-label">Comissão Alugaê</span>
                   <span class="summary-row-val" id="summary-platform-fee">10%</span>
+                </div>
+                <div class="summary-row" id="summary-pix-discount-row">
+                  <span class="summary-row-label">Desconto Pix Direto (0,99%)</span>
+                  <span class="summary-row-val" id="summary-pix-discount" style="color:var(--success);">- R$ 0,00</span>
                 </div>
                 <div class="summary-row total">
                   <span class="summary-row-label">Total a pagar</span>

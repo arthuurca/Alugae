@@ -7,12 +7,15 @@
 
   window.AlugaePayment = {
     /**
-     * Inicia o fluxo de checkout redirecionando para o Mercado Pago Checkout Pro
+     * Inicia o fluxo de checkout (Pix Direto sem taxa ou Mercado Pago Checkout Pro)
      */
-    async iniciarCheckout({ productId, dataInicio, dataFim, tamanho, notes, btnElement }) {
+    async iniciarCheckout({ productId, dataInicio, dataFim, tamanho, notes, paymentMethod, btnElement }) {
+      const isPixDireto = paymentMethod === "pix_direto";
       if (btnElement) {
         btnElement.disabled = true;
-        btnElement.textContent = "Gerando pagamento seguro...";
+        btnElement.textContent = isPixDireto
+          ? "Gerando QR Code Pix..."
+          : "Gerando pagamento seguro...";
       }
 
       try {
@@ -22,7 +25,15 @@
           data_fim: dataFim,
           tamanho,
           notes,
+          payment_method: paymentMethod || "mercadopago",
         });
+
+        if (resultado.payment_method === "pix_direto" && resultado.pix_payload) {
+          localStorage.setItem("alugae_last_code", resultado.codigo);
+          sessionStorage.setItem(`alugae_pix_${resultado.codigo}`, resultado.pix_payload);
+          window.location.href = resultado.redirect_url || `confirmacao.html?ref=${encodeURIComponent(resultado.codigo)}&method=pix`;
+          return;
+        }
 
         if (resultado.checkout_url) {
           // Salva referência rápida local para caso o usuário retorne manualmente
@@ -37,7 +48,9 @@
         console.error("Erro no checkout:", err);
         if (btnElement) {
           btnElement.disabled = false;
-          btnElement.textContent = "Ir para o pagamento";
+          btnElement.textContent = isPixDireto
+            ? "Gerar QR Code Pix"
+            : "Ir para o pagamento seguro";
         }
         throw err;
       }

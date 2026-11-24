@@ -368,9 +368,9 @@
     // ── RESERVATIONS & PAYMENT ────────────────────────────────
 
     /**
-     * Cria reserva e obtém preferência de checkout no Mercado Pago chamando a Edge Function
+     * Cria reserva e inicia pagamento (Pix Direto sem taxa da API ou Mercado Pago Checkout Pro)
      */
-    async createReservationAndCheckout({ product_id, data_inicio, data_fim, tamanho, notes }) {
+    async createReservationAndCheckout({ product_id, data_inicio, data_fim, tamanho, notes, payment_method }) {
       const client = getClient();
       const { data: sessionData } = await client.auth.getSession();
       const session = sessionData?.session;
@@ -388,6 +388,7 @@
           data_fim,
           tamanho,
           notes,
+          payment_method: payment_method || "mercadopago",
         },
       });
 

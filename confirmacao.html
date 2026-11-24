@@ -72,6 +72,22 @@
             Código da Reserva:&nbsp;<strong id="conf-ref">—</strong>
           </div>
 
+          <!-- Pix Direto QR Code Box -->
+          <div id="pix-payment-box" style="display:none;margin:1.5rem auto;padding:1.5rem;border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface-2);max-width:460px;text-align:center;">
+            <h2 style="font-size:1.15rem;margin:0 0 0.4rem;">Pague via Pix Direto (sem taxa da API)</h2>
+            <p style="font-size:0.85rem;color:var(--text-3);margin:0 0 1rem;">
+              Escaneie o QR Code no app do seu banco ou use o Pix Copia e Cola abaixo.
+            </p>
+            <div id="pix-qr-code" style="display:inline-flex;padding:0.75rem;background:#fff;border-radius:var(--r-md);margin-bottom:1rem;"></div>
+            <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;">
+              <input id="pix-copy-paste" class="form-input" type="text" readonly aria-label="Código Pix Copia e Cola" style="font-size:0.8rem;" />
+              <button type="button" id="btn-copy-pix" class="btn btn-primary btn-sm" style="white-space:nowrap;">Copiar</button>
+            </div>
+            <p style="font-size:0.8rem;color:var(--text-3);margin:0;">
+              Após pagar, acesse <a href="minha-conta.html" style="color:var(--orange);font-weight:600;">Minha Conta → Conversas</a> e envie o comprovante para confirmação.
+            </p>
+          </div>
+
           <!-- Details Card -->
           <div class="confirmation-details" aria-label="Detalhes da reserva">
             <div class="confirmation-details-title">Resumo da locação</div>
@@ -128,6 +144,7 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
@@ -175,6 +192,7 @@
           subtitleEl.textContent = "Seu aluguel está 100% garantido no acervo. Preparamos sua peça com todo carinho.";
           badgeContainer.innerHTML = `<span class="status-badge-big status-badge-paga">✓ Reserva Paga e Garantida</span>`;
         } else if (res.status === "aguardando_pagamento") {
+          const isPixDireto = res.metodo_pagamento === "pix_direto" || getParam("method") === "pix";
           iconEl.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" fill="none"
               stroke="#eab308" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -182,9 +200,44 @@
               <polyline points="22 12 22 22 28 26"/>
             </svg>
           `;
-          headingEl.textContent = "Aguardando confirmação";
-          subtitleEl.innerHTML = `Identificamos sua reserva. Estamos aguardando o retorno do pagamento pelo Mercado Pago.`;
+          headingEl.textContent = isPixDireto ? "Pague com Pix para confirmar" : "Aguardando confirmação";
+          subtitleEl.innerHTML = isPixDireto
+            ? "Seu desconto de 0,99% já foi aplicado. Faça o Pix abaixo e envie o comprovante no chat da reserva."
+            : "Identificamos sua reserva. Estamos aguardando o retorno do pagamento pelo Mercado Pago.";
           badgeContainer.innerHTML = `<span class="status-badge-big status-badge-aguardando">⏳ Aguardando Pagamento</span>`;
+
+          const pixBoxEl = document.getElementById("pix-payment-box");
+          const pixPayload = sessionStorage.getItem(`alugae_pix_${res.codigo}`);
+          if (isPixDireto && pixBoxEl && pixPayload) {
+            pixBoxEl.style.display = "block";
+            const qrContainer = document.getElementById("pix-qr-code");
+            const copyInput = document.getElementById("pix-copy-paste");
+            const copyBtn = document.getElementById("btn-copy-pix");
+            if (copyInput) copyInput.value = pixPayload;
+            if (qrContainer && qrContainer.childElementCount === 0 && typeof QRCode !== "undefined") {
+              new QRCode(qrContainer, {
+                text: pixPayload,
+                width: 200,
+                height: 200,
+                correctLevel: QRCode.CorrectLevel.M,
+              });
+            }
+            if (copyBtn && !copyBtn.dataset.bound) {
+              copyBtn.dataset.bound = "1";
+              copyBtn.addEventListener("click", async () => {
+                try {
+                  await navigator.clipboard.writeText(pixPayload);
+                  showToast("Código Pix copiado!", "success");
+                } catch {
+                  if (copyInput) {
+                    copyInput.select();
+                    document.execCommand("copy");
+                    showToast("Código Pix copiado!", "success");
+                  }
+                }
+              });
+            }
+          }
         } else if (res.status === "expirada" || res.status === "cancelada") {
           iconEl.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" fill="none"

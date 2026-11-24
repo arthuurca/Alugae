@@ -11,6 +11,70 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+const PIX_DISCOUNT_RATE = 0.0099; // 0,99% de desconto por não usar a API do Mercado Pago
+
+function formatTlv(id: string, value: string): string {
+  const len = String(value.length).padStart(2, "0");
+  return `${id}${len}${value}`;
+}
+
+function sanitizePixText(text: string, maxLen: number): string {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^A-Za-z0-9 ]/g, "")
+    .trim()
+    .toUpperCase()
+    .slice(0, maxLen) || "ALUGAE";
+}
+
+function crc16Ccitt(payload: string): string {
+  let crc = 0xffff;
+  for (let i = 0; i < payload.length; i++) {
+    crc ^= payload.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      crc = (crc & 0x8000) !== 0 ? ((crc << 1) ^ 0x1021) & 0xffff : (crc << 1) & 0xffff;
+    }
+  }
+  return crc.toString(16).toUpperCase().padStart(4, "0");
+}
+
+function buildPixBrCode({
+  pixKey,
+  merchantName,
+  merchantCity,
+  amount,
+  txid,
+}: {
+  pixKey: string;
+  merchantName: string;
+  merchantCity: string;
+  amount: number;
+  txid: string;
+}): string {
+  const gui = formatTlv("00", "br.gov.bcb.pix");
+  const key = formatTlv("01", pixKey.trim());
+  const merchantAccount = formatTlv("26", `${gui}${key}`);
+
+  const cleanTxid = txid.replace(/[^A-Za-z0-9]/g, "").slice(0, 25) || "ALUGAE";
+  const additionalData = formatTlv("62", formatTlv("05", cleanTxid));
+
+  const payloadWithoutCrc = [
+    formatTlv("00", "01"),
+    merchantAccount,
+    formatTlv("52", "0000"),
+    formatTlv("53", "986"),
+    formatTlv("54", amount.toFixed(2)),
+    formatTlv("58", "BR"),
+    formatTlv("59", sanitizePixText(merchantName, 25)),
+    formatTlv("60", sanitizePixText(merchantCity, 15)),
+    additionalData,
+    "6304",
+  ].join("");
+
+  return `${payloadWithoutCrc}${crc16Ccitt(payloadWithoutCrc)}`;
+}
+
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -53,7 +117,8 @@ serve(async (req: Request) => {
     }
 
     const body = await req.json();
-    const { product_id, data_inicio, data_fim, tamanho, notes } = body;
+    const { product_id, data_inicio, data_fim, tamanho, notes, payment_method } = body;
+    const paymentMethod = payment_method === "pix_direto" ? "pix_direto" : "mercadopago";
 
     if (!product_id || !data_inicio || !data_fim) {
       return new Response(JSON.stringify({ error: "Parâmetros obrigatórios ausentes." }), {
@@ -142,9 +207,11 @@ serve(async (req: Request) => {
     // 4. Cálculo do valor total no servidor
     const precoDiaria = Number(product.preco_diaria);
     const valorDiarias = Number((precoDiaria * diffDays).toFixed(2));
-    const taxaPlataforma = Number((valorDiarias * 0.10).toFixed(2));
-    const valorRepasse = Number((valorDiarias - taxaPlataforma).toFixed(2));
-    const valorTotal = valorDiarias;
+    const isPixDireto = paymentMethod === "pix_direto";
+    const descontoPix = isPixDireto ? Number((valorDiarias * PIX_DISCOUNT_RATE).toFixed(2)) : 0;
+    const valorTotal = Number((valorDiarias - descontoPix).toFixed(2));
+    const taxaPlataforma = Number((valorTotal * 0.10).toFixed(2));
+    const valorRepasse = Number((valorTotal - taxaPlataforma).toFixed(2));
 
     // Código da reserva amigável único: RES-XXXXX
     const codigo = "RES-" + Math.random().toString(36).substring(2, 7).toUpperCase();
@@ -168,7 +235,9 @@ serve(async (req: Request) => {
         valor_total: valorTotal,
         valor_bruto: valorDiarias,
         taxa_plataforma: taxaPlataforma,
+        taxa_mercado_pago: 0,
         valor_repasse: valorRepasse,
+        metodo_pagamento: isPixDireto ? "pix_direto" : null,
         status: "aguardando_pagamento",
         expires_at: expiresAt.toISOString(),
         notes: notes || null,
@@ -182,6 +251,38 @@ serve(async (req: Request) => {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    if (isPixDireto) {
+      const pixKey = Deno.env.get("PIX_KEY") || "contato@alugae.com.br";
+      const pixMerchantName = Deno.env.get("PIX_MERCHANT_NAME") || "ALUGAE MODA";
+      const pixMerchantCity = Deno.env.get("PIX_MERCHANT_CITY") || "SAO PAULO";
+      const pixPayload = buildPixBrCode({
+        pixKey,
+        merchantName: pixMerchantName,
+        merchantCity: pixMerchantCity,
+        amount: valorTotal,
+        txid: codigo,
+      });
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          payment_method: "pix_direto",
+          reservation_id: reservation.id,
+          codigo,
+          valor_diarias: valorDiarias,
+          desconto_pix: descontoPix,
+          valor_total: valorTotal,
+          pix_payload: pixPayload,
+          pix_configured: Boolean(Deno.env.get("PIX_KEY")),
+          redirect_url: `confirmacao.html?ref=${codigo}&method=pix`,
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
 
     // 6. Criação da Preferência no Mercado Pago Checkout Pro
