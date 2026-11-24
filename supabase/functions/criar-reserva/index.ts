@@ -11,7 +11,7 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const PIX_DISCOUNT_RATE = 0.01; // 1% de desconto no Pix Direto
+const PIX_DISCOUNT_RATE = 0.05; // 5% de desconto no Pix Direto (taxa do cartão 4,98% arredondada)
 
 function formatTlv(id: string, value: string): string {
   const len = String(value.length).padStart(2, "0");

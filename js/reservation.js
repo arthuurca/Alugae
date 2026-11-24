@@ -157,7 +157,7 @@
 
     const calculatedRentalPrice = product.rentalPrice * effectiveDays;
     const isPixDireto = paymentMethod === "pix_direto";
-    const pixDiscount = isPixDireto ? Number((calculatedRentalPrice * 0.01).toFixed(2)) : 0;
+    const pixDiscount = isPixDireto ? Number((calculatedRentalPrice * 0.05).toFixed(2)) : 0;
     const finalTotal = Number((calculatedRentalPrice - pixDiscount).toFixed(2));
 
     const rentalEl = document.getElementById("summary-rental");
