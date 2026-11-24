@@ -121,7 +121,6 @@
           sizes: p.tamanhos || [],
           size: (p.tamanhos || []).join(", "),
           rentalPrice: Number(p.preco_diaria),
-          deposit: Number(p.caucao),
           rating: Number(p.rating) || 5.0,
           reviews: p.reviews || 0,
           description: p.descricao,
@@ -138,12 +137,6 @@
             : null,
         }));
       }
-    }
-
-    // Fallback amigável para os dados locais se ainda não houver conexão com banco configurada
-    if (items.length === 0 && typeof PRODUCTS !== "undefined") {
-      console.info("Usando catálogo local de fallback (js/data.js).");
-      items = PRODUCTS;
     }
 
     state.products = items;
@@ -277,8 +270,8 @@
     if (filtered.length === 0) {
       productsGrid.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; color: var(--text-3);">
-          <p style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text);">Nenhuma peça encontrada para estes filtros.</p>
-          <p style="font-size: 0.9rem;">Tente ajustar as categorias, tamanhos ou valores selecionados.</p>
+          <p style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text);">Nenhuma peça disponível no acervo.</p>
+          <p style="font-size: 0.9rem;">Seja o primeiro anunciante a publicar uma peça.</p>
         </div>
       `;
       return;

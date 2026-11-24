@@ -48,7 +48,7 @@
 
           <div class="hero-stats" role="list" aria-label="Estatísticas da plataforma">
             <div role="listitem">
-              <div class="hero-stat-value">120+</div>
+              <div class="hero-stat-value" id="inventory-count">0</div>
               <div class="hero-stat-label">Peças no acervo</div>
             </div>
             <div role="listitem">
@@ -208,7 +208,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
             <h3 class="how-step-title">Arrase e devolva</h3>
-            <p class="how-step-desc">Use, brilhe, devolva. Sem complicação. Caução devolvida após vistoria.</p>
+            <p class="how-step-desc">Use, brilhe e devolva. Combine entrega e devolução diretamente pelo chat.</p>
           </div>
         </div>
       </div>
@@ -332,12 +332,19 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
   <script src="js/supabaseClient.js"></script>
   <script src="js/api.js"></script>
-  <script src="js/data.js"></script>
   <script src="js/main.js"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", async function () {
       await initPage();
+
+      if (window.AlugaeAPI) {
+        const { data: products } = await window.AlugaeAPI.getProducts();
+        const inventoryCount = document.getElementById("inventory-count");
+        if (inventoryCount) {
+          inventoryCount.textContent = String(Array.isArray(products) ? products.length : 0);
+        }
+      }
 
       /* ── Occasion buttons ─── */
       const state = { occasion: "" };

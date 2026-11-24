@@ -43,17 +43,12 @@
           name: data.titulo,
           categoryLabel: capitalize(data.categoria),
           rentalPrice: Number(data.preco_diaria),
-          deposit: Number(data.caucao) || 0,
           colorScheme: data.categoria,
           artType: data.art_type || "dress-midi",
           artColor: data.art_color || "#888",
           imagePath: data.imagens && data.imagens.length > 0 ? data.imagens[0] : null,
         };
       }
-    }
-
-    if (!product && typeof getProductById === "function") {
-      product = getProductById(id);
     }
 
     if (!product) {
@@ -147,11 +142,14 @@
     const rentalEl = document.getElementById("summary-rental");
     if (rentalEl) rentalEl.textContent = formatPrice(calculatedRentalPrice);
 
-    const depositEl = document.getElementById("summary-deposit");
-    if (depositEl) depositEl.textContent = formatPrice(product.deposit);
+    const platformFeeEl = document.getElementById("summary-platform-fee");
+    if (platformFeeEl) {
+      platformFeeEl.textContent = `10% (${formatPrice(calculatedRentalPrice * 0.10)})`;
+    }
 
     const totalEl = document.getElementById("summary-total");
-    if (totalEl) totalEl.textContent = formatPrice(calculatedRentalPrice + product.deposit);
+    if (totalEl) totalEl.textContent = formatPrice(calculatedRentalPrice);
+
   }
 
   document.addEventListener("DOMContentLoaded", init);
