@@ -28,11 +28,14 @@
           payment_method: paymentMethod || "mercadopago",
         });
 
-        if (resultado.payment_method === "pix_direto" && resultado.pix_payload) {
-          localStorage.setItem("alugae_last_code", resultado.codigo);
-          sessionStorage.setItem(`alugae_pix_${resultado.codigo}`, resultado.pix_payload);
-          window.location.href = resultado.redirect_url || `confirmacao.html?ref=${encodeURIComponent(resultado.codigo)}&method=pix`;
-          return;
+        if (isPixDireto) {
+          if (resultado.payment_method === "pix_direto" && resultado.pix_payload) {
+            localStorage.setItem("alugae_last_code", resultado.codigo);
+            sessionStorage.setItem(`alugae_pix_${resultado.codigo}`, resultado.pix_payload);
+            window.location.href = resultado.redirect_url || `confirmacao.html?ref=${encodeURIComponent(resultado.codigo)}&method=pix`;
+            return;
+          }
+          throw new Error("O servidor ainda não foi atualizado para Pix Direto. Faça o deploy da função criar-reserva.");
         }
 
         if (resultado.checkout_url) {
