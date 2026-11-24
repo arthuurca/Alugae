@@ -11,7 +11,7 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const PIX_DISCOUNT_RATE = 0.0099; // 0,99% de desconto por não usar a API do Mercado Pago
+const PIX_DISCOUNT_RATE = 0.01; // 1% de desconto no Pix Direto
 
 function formatTlv(id: string, value: string): string {
   const len = String(value.length).padStart(2, "0");

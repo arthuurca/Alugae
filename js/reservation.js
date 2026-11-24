@@ -157,16 +157,11 @@
 
     const calculatedRentalPrice = product.rentalPrice * effectiveDays;
     const isPixDireto = paymentMethod === "pix_direto";
-    const pixDiscount = isPixDireto ? Number((calculatedRentalPrice * 0.0099).toFixed(2)) : 0;
+    const pixDiscount = isPixDireto ? Number((calculatedRentalPrice * 0.01).toFixed(2)) : 0;
     const finalTotal = Number((calculatedRentalPrice - pixDiscount).toFixed(2));
 
     const rentalEl = document.getElementById("summary-rental");
     if (rentalEl) rentalEl.textContent = formatPrice(calculatedRentalPrice);
-
-    const platformFeeEl = document.getElementById("summary-platform-fee");
-    if (platformFeeEl) {
-      platformFeeEl.textContent = `10% (${formatPrice(finalTotal * 0.10)})`;
-    }
 
     const pixDiscountRowEl = document.getElementById("summary-pix-discount-row");
     const pixDiscountEl = document.getElementById("summary-pix-discount");
