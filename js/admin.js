@@ -73,6 +73,8 @@
 
     const filtered = allReservations.filter((r) => {
       if (filter === "todas") return true;
+      if (filter === "concluida") return r.status === "paga" && r.repasse_status === "repassado";
+      if (filter === "paga") return r.status === "paga" && r.repasse_status !== "repassado";
       if (filter === "cancelada") return r.status === "cancelada" || r.status === "expirada";
       return r.status === filter;
     });
@@ -85,7 +87,27 @@
     tbody.innerHTML = filtered.map((r) => {
       const storeName = r.product?.owner?.nome_loja || r.product?.owner?.nome || "Loja";
       const methodLabel = r.metodo_pagamento === "pix_direto" ? "Pix Direto" : (r.metodo_pagamento || "Mercado Pago");
-      const canAct = r.status === "aguardando_pagamento";
+      const isPending = r.status === "aguardando_pagamento";
+      const isPaidOpen = r.status === "paga" && r.repasse_status !== "repassado";
+      const isCompleted = r.status === "paga" && r.repasse_status === "repassado";
+
+      const statusLabel = isCompleted
+        ? "venda concluída"
+        : r.status.replace("_", " ");
+
+      let actionsHtml = `<span style="color:var(--text-3);font-size:0.8rem;">—</span>`;
+      if (isPending) {
+        actionsHtml = `
+          <div style="display:flex;gap:0.4rem;">
+            <button type="button" class="btn btn-primary btn-sm btn-admin-confirm" data-id="${r.id}">Confirmar</button>
+            <button type="button" class="btn btn-ghost btn-sm btn-admin-cancel" data-id="${r.id}">Cancelar</button>
+          </div>`;
+      } else if (isPaidOpen) {
+        actionsHtml = `
+          <button type="button" class="btn btn-primary btn-sm btn-admin-complete" data-id="${r.id}">Concluir venda</button>`;
+      } else if (isCompleted) {
+        actionsHtml = `<span style="color:var(--success);font-weight:600;font-size:0.82rem;">✓ Concluída</span>`;
+      }
 
       return `
         <tr>
@@ -98,15 +120,8 @@
           <td>${escapeHTML(methodLabel)}</td>
           <td>${formatPrice(r.valor_total || 0)}</td>
           <td style="color:var(--orange);font-weight:700;">${formatPrice(r.taxa_plataforma || 0)}</td>
-          <td><span class="status-badge status-${r.status}">${r.status.replace("_", " ")}</span></td>
-          <td>
-            ${canAct
-              ? `<div style="display:flex;gap:0.4rem;">
-                   <button type="button" class="btn btn-primary btn-sm btn-admin-confirm" data-id="${r.id}">Confirmar</button>
-                   <button type="button" class="btn btn-ghost btn-sm btn-admin-cancel" data-id="${r.id}">Cancelar</button>
-                 </div>`
-              : `<span style="color:var(--text-3);font-size:0.8rem;">—</span>`}
-          </td>
+          <td><span class="status-badge status-${r.status}">${statusLabel}</span></td>
+          <td>${actionsHtml}</td>
         </tr>
       `;
     }).join("");
@@ -114,6 +129,12 @@
     tbody.querySelectorAll(".btn-admin-confirm").forEach((btn) => {
       btn.addEventListener("click", async () => {
         await handleReservationAction("confirm_payment", btn.dataset.id, btn);
+      });
+    });
+
+    tbody.querySelectorAll(".btn-admin-complete").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        await handleReservationAction("complete_sale", btn.dataset.id, btn);
       });
     });
 
@@ -131,10 +152,16 @@
       return;
     }
 
+    const messages = {
+      confirm_payment: "Pagamento confirmado!",
+      complete_sale: "Venda marcada como concluída!",
+      cancel_reservation: "Reserva cancelada.",
+    };
+
     btn.disabled = true;
     try {
       await callAdminPanel({ action, reservation_id: reservationId }, token);
-      showToast(action === "confirm_payment" ? "Pagamento confirmado!" : "Reserva cancelada.", "success");
+      showToast(messages[action] || "Atualizado com sucesso!", "success");
       await loadDashboard();
     } catch (err) {
       showToast(err.message || "Erro ao atualizar reserva.", "error");

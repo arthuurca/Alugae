@@ -162,6 +162,56 @@ serve(async (req: Request) => {
       });
     }
 
+    if (action === "complete_sale") {
+      const reservationId = String(body.reservation_id || "").trim();
+      if (!reservationId) {
+        return new Response(JSON.stringify({ error: "ID da reserva ausente." }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { data: res, error: fetchErr } = await supabaseAdmin
+        .from("reservations")
+        .select("id, status")
+        .eq("id", reservationId)
+        .single();
+
+      if (fetchErr || !res) {
+        return new Response(JSON.stringify({ error: "Reserva não encontrada." }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (res.status !== "paga") {
+        return new Response(JSON.stringify({ error: "Confirme o pagamento antes de concluir a venda." }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { error: updateErr } = await supabaseAdmin
+        .from("reservations")
+        .update({
+          repasse_status: "repassado",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", reservationId);
+
+      if (updateErr) {
+        return new Response(JSON.stringify({ error: "Erro ao concluir venda." }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     if (action === "cancel_reservation") {
       const reservationId = String(body.reservation_id || "").trim();
       if (!reservationId) {
