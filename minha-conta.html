@@ -205,6 +205,14 @@
               <div id="anuncios-lista">
                 <p style="color:var(--text-3);">Carregando peças...</p>
               </div>
+
+              <div style="margin-top:2rem;border-top:1px solid var(--border);padding-top:1.5rem;">
+                <h3 style="font-size:1.2rem;margin-bottom:0.25rem;">Reservas Recebidas (Pedidos da Loja)</h3>
+                <p style="color:var(--text-3);font-size:0.875rem;margin-bottom:1rem;">Confirme o pagamento quando o cliente pagar via Pix e enviar o comprovante.</p>
+                <div id="loja-reservas-lista">
+                  <p style="color:var(--text-3);">Carregando pedidos da loja...</p>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -457,6 +465,51 @@
               window.location.reload();
             });
           });
+        }
+
+        // 5. Carrega pedidos recebidos pela loja com opção de confirmar pagamento
+        const lojaReservasEl = document.getElementById("loja-reservas-lista");
+        if (lojaReservasEl) {
+          const { data: ownerReservas } = await window.AlugaeAPI.getMyOwnerReservations();
+          if (!ownerReservas || ownerReservas.length === 0) {
+            lojaReservasEl.innerHTML = `<p style="color:var(--text-3);padding:0.5rem 0;">Nenhum pedido recebido ainda.</p>`;
+          } else {
+            lojaReservasEl.innerHTML = ownerReservas.map(r => `
+              <div class="reservation-item" style="gap:1rem;flex-wrap:wrap;">
+                <div>
+                  <strong>${escapeHTML(r.product?.titulo || "Peça")}</strong>
+                  <span style="font-size:0.85rem;color:var(--text-3);display:block;">
+                    ${r.codigo} • Cliente: ${escapeHTML(r.renter?.nome || "Locatário")} • ${formatDateBR(r.data_inicio)} a ${formatDateBR(r.data_fim)}
+                  </span>
+                  <span style="font-size:0.82rem;color:var(--text-3);display:block;">
+                    Total: ${formatPrice(r.valor_total)} • Repasse líquido: ${formatPrice(r.valor_repasse || 0)} • ${r.metodo_pagamento === "pix_direto" ? "Pix Direto" : "Mercado Pago"}
+                  </span>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.75rem;">
+                  <span class="status-badge status-${r.status}">${r.status.replace("_", " ")}</span>
+                  ${r.status === "aguardando_pagamento"
+                    ? `<button type="button" class="btn btn-primary btn-sm btn-confirm-store-pay" data-id="${r.id}">Confirmar pagamento</button>`
+                    : ""}
+                </div>
+              </div>
+            `).join("");
+
+            document.querySelectorAll(".btn-confirm-store-pay").forEach(btn => {
+              btn.addEventListener("click", async () => {
+                btn.disabled = true;
+                btn.textContent = "Confirmando...";
+                try {
+                  await window.AlugaeAPI.confirmStoreReservationPayment(btn.dataset.id);
+                  showToast("Pagamento confirmado com sucesso!", "success");
+                  window.location.reload();
+                } catch (err) {
+                  showToast(err.message || "Não foi possível confirmar o pagamento.", "error");
+                  btn.disabled = false;
+                  btn.textContent = "Confirmar pagamento";
+                }
+              });
+            });
+          }
         }
       }
     });

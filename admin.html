@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Admin — ALUGAÊ</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pages.css" />
+  <style>
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .admin-kpi {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 1.25rem;
+    }
+    .admin-kpi-label {
+      font-size: 0.8rem;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.4rem;
+    }
+    .admin-kpi-value {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .admin-kpi-highlight {
+      border-color: var(--orange);
+    }
+    .admin-kpi-highlight .admin-kpi-value {
+      color: var(--orange);
+    }
+    .admin-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      background: var(--surface-2);
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    .admin-table th, .admin-table td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .admin-table th {
+      color: var(--text-3);
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }
+    .admin-table tr:last-child td {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="page-wrapper">
+    <div class="container" style="max-width:1120px;padding:3rem 1.25rem 5rem;">
+
+      <!-- Login Admin -->
+      <section id="admin-login-section" style="max-width:420px;margin:2rem auto;">
+        <div class="account-card page-enter">
+          <h1 style="font-size:1.6rem;margin-bottom:0.35rem;">Painel Administrativo</h1>
+          <p style="color:var(--text-3);font-size:0.9rem;margin-bottom:1.5rem;">
+            Acesse com a conta administrativa para acompanhar vendas, lucros e confirmar pagamentos.
+          </p>
+
+          <form id="admin-login-form">
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label class="form-label" for="admin-username">Usuário</label>
+              <input class="form-input" id="admin-username" type="text" required placeholder="admin" autocomplete="username" />
+            </div>
+
+            <div class="form-group" style="margin-bottom:1.5rem;">
+              <label class="form-label" for="admin-password">Senha</label>
+              <input class="form-input" id="admin-password" type="password" required placeholder="••••••••" autocomplete="current-password" />
+            </div>
+
+            <button class="btn btn-primary btn-lg" id="admin-login-btn" type="submit" style="width:100%;">
+              Entrar no painel
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Dashboard Admin -->
+      <section id="admin-dashboard-section" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
+          <div>
+            <h1 style="font-size:1.85rem;margin-bottom:0.25rem;">Análise de Vendas &amp; Lucro</h1>
+            <p style="color:var(--text-3);font-size:0.9rem;margin:0;">Visão financeira da Alugaê e gestão de pagamentos.</p>
+          </div>
+          <div style="display:flex;gap:0.75rem;">
+            <button type="button" id="admin-refresh-btn" class="btn btn-ghost btn-sm">Atualizar dados</button>
+            <button type="button" id="admin-logout-btn" class="btn btn-ghost btn-sm">Sair</button>
+          </div>
+        </div>
+
+        <!-- KPIs principais -->
+        <div class="admin-grid">
+          <div class="admin-kpi">
+            <div class="admin-kpi-label">Vendas Confirmadas</div>
+            <div class="admin-kpi-value" id="kpi-vendas">0</div>
+          </div>
+          <div class="admin-kpi">
+            <div class="admin-kpi-label">Faturamento Bruto (GMV)</div>
+            <div class="admin-kpi-value" id="kpi-gmv">R$ 0,00</div>
+          </div>
+          <div class="admin-kpi admin-kpi-highlight">
+            <div class="admin-kpi-label">Lucro Alugaê (10%)</div>
+            <div class="admin-kpi-value" id="kpi-lucro">R$ 0,00</div>
+          </div>
+          <div class="admin-kpi">
+            <div class="admin-kpi-label">Repasse às Lojas</div>
+            <div class="admin-kpi-value" id="kpi-repasse">R$ 0,00</div>
+          </div>
+          <div class="admin-kpi">
+            <div class="admin-kpi-label">Ticket Médio</div>
+            <div class="admin-kpi-value" id="kpi-ticket">R$ 0,00</div>
+          </div>
+          <div class="admin-kpi">
+            <div class="admin-kpi-label">Aguardando Pagamento</div>
+            <div class="admin-kpi-value" id="kpi-pendentes">0</div>
+          </div>
+        </div>
+
+        <!-- Comparativo por método de pagamento -->
+        <div class="account-card" style="margin-bottom:1.75rem;">
+          <h2 style="font-size:1.2rem;margin-bottom:1rem;">Desempenho por Forma de Pagamento</h2>
+          <div class="admin-grid" style="margin-bottom:0;">
+            <div class="admin-kpi">
+              <div class="admin-kpi-label">Pix Direto (5% desconto)</div>
+              <div class="admin-kpi-value" id="kpi-pix-qtd" style="font-size:1.3rem;">0 vendas</div>
+              <div id="kpi-pix-valores" style="font-size:0.85rem;color:var(--text-3);margin-top:0.35rem;">Bruto: R$ 0,00 • Lucro: R$ 0,00</div>
+            </div>
+            <div class="admin-kpi">
+              <div class="admin-kpi-label">Mercado Pago</div>
+              <div class="admin-kpi-value" id="kpi-mp-qtd" style="font-size:1.3rem;">0 vendas</div>
+              <div id="kpi-mp-valores" style="font-size:0.85rem;color:var(--text-3);margin-top:0.35rem;">Bruto: R$ 0,00 • Lucro: R$ 0,00</div>
+            </div>
+            <div class="admin-kpi">
+              <div class="admin-kpi-label">Base da Plataforma</div>
+              <div class="admin-kpi-value" id="kpi-base" style="font-size:1.3rem;">0 peças</div>
+              <div id="kpi-usuarios" style="font-size:0.85rem;color:var(--text-3);margin-top:0.35rem;">0 usuários • Taxas MP: R$ 0,00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de reservas e confirmação -->
+        <div class="account-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+            <h2 style="font-size:1.2rem;margin:0;">Reservas e Pagamentos</h2>
+            <select id="admin-status-filter" class="form-input" style="max-width:220px;">
+              <option value="todas">Todos os status</option>
+              <option value="aguardando_pagamento">Aguardando pagamento</option>
+              <option value="paga">Pagas</option>
+              <option value="cancelada">Canceladas / Expiradas</option>
+            </select>
+          </div>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Peça / Loja</th>
+                  <th>Cliente</th>
+                  <th>Método</th>
+                  <th>Total</th>
+                  <th>Lucro (10%)</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="admin-reservations-body">
+                <tr><td colspan="8" style="color:var(--text-3);">Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

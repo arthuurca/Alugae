@@ -470,5 +470,37 @@
         .eq("product.owner_id", user.id)
         .order("created_at", { ascending: false });
     },
+
+    /**
+     * Confirma o pagamento de uma reserva pela loja dona da peça
+     */
+    async confirmStoreReservationPayment(reservationId) {
+      const client = getClient();
+      const { data: sessionData } = await client.auth.getSession();
+      const session = sessionData?.session;
+      if (!session || !session.access_token) {
+        throw new Error("Faça login para confirmar o pagamento.");
+      }
+
+      const { data, error } = await client.functions.invoke("confirmar-pagamento-loja", {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: { reservation_id: reservationId },
+      });
+
+      if (error) {
+        let msg = error.message;
+        try {
+          if (error.context && typeof error.context.json === "function") {
+            const bodyErr = await error.context.json();
+            if (bodyErr?.error) msg = bodyErr.error;
+          }
+        } catch (_) {}
+        throw new Error(msg || "Não foi possível confirmar o pagamento.");
+      }
+
+      return data;
+    },
   };
 })();
